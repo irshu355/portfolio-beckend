@@ -9,22 +9,41 @@ from django.db import models
 
 
 class Ticker(models.Model):
-    symbol = models.CharField(unique=True, max_length=30, blank=True, null=True)
-    price = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    symbol = models.CharField(
+        unique=True, max_length=30, blank=True, null=True)
+    price = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
     name = models.CharField(unique=True, max_length=80, blank=True, null=True)
-    previous_close = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-    year_low = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
-    year_high = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
+    sector = models.CharField(
+        unique=True, max_length=90, blank=True, null=True)
+    industry = models.CharField(
+        unique=True, max_length=90, blank=True, null=True)
+
+    previous_close = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+
+    fifty_two_week_low = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    fifty_two_week_high = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+
+    day_low = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+    day_high = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=True, null=True)
+
     volume = models.IntegerField(blank=True, null=True)
-    pe_ratio = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    eps = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    pe_ratio = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True)
+    eps = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True)
+    market_cap = models.BigIntegerField(blank=True, null=True)
+
+    exchange = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.symbol
 
-    
-
-
     class Meta:
-        managed = False
+        managed = True
         db_table = 'ticker'

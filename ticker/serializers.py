@@ -5,4 +5,4 @@ from .models import *
 class TickerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticker
-        fields = ("symbol","name","price")
+        fields = "__all__"

@@ -5,18 +5,25 @@ from rest_framework import permissions
 from django.contrib.auth.models import User, Group
 from ticker.serializers import TickerSerializer
 from ticker.models import Ticker
+from rest_framework.views import APIView, Response
 
 
 from rest_framework import generics
 
 
+class CustomView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response("Some Get Response")
 
+    def post(self, request, format=None):
+        return Response("Some Post Response")
 
 
 class TickerViewSet(viewsets.ModelViewSet):
     serializer_class = TickerSerializer
     queryset = Ticker.objects.all()
     #permission_classes = [permissions.IsAuthenticated]
+
 
 class ListTickerView(generics.ListAPIView):
     """
@@ -25,16 +32,6 @@ class ListTickerView(generics.ListAPIView):
 
     queryset = Ticker.objects.all()
     serializer_class = TickerSerializer
-
-def index(request):
-        return HttpResponse("Hello, world. You're at the polls index.")
-
-
-
-
-
-
-
 
 
 # Create your views here.
