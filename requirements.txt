@@ -1,0 +1,3 @@
+pip install django-celery-results
+celery['redis']
+pip install django-celery-beat

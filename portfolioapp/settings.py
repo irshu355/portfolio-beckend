@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ticker.apps.TickerConfig',
     'rest_framework',
+    'django_celery_results'
 ]
 
 MIDDLEWARE = [
@@ -77,13 +78,13 @@ WSGI_APPLICATION = 'portfolioapp.wsgi.application'
 
 DATABASES = {
     'default': {
-    'ENGINE': 'django.db.backends.mysql',
-    'NAME':'portfolio',
-    'USER':'root',
-    'PASSWORD':'ek246355',
-    'HOST':'127.0.0.1',
-    'PORT':'3306'
-}
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'portfolio',
+        'USER': 'root',
+        'PASSWORD': 'ek246355',
+        'HOST': '127.0.0.1',
+        'PORT': '3306'
+    }
 }
 
 REST_FRAMEWORK = {
@@ -131,3 +132,18 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+CELERY_RESULT_BACKEND = 'django-db'
+
+CELERY_CACHE_BACKEND = 'default'
+
+# django setting.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'my_cache_table',
+    }
+}
