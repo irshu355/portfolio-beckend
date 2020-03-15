@@ -7,14 +7,12 @@ from django.contrib.auth.models import User, Group
 from ticker.serializers import TickerSerializer
 from ticker.models import Ticker
 from rest_framework.views import APIView, Response
-from ticker.tasks import *
 
 from rest_framework import generics
 
 
 class CustomView(APIView):
     def get(self, request, *args, **kwargs):
-        add.delay(10, 20)
         return Response("Some Get Response")
 
     def post(self, request, format=None):
