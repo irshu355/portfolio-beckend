@@ -40,6 +40,8 @@ class Ticker(models.Model):
     market_cap = models.BigIntegerField(blank=True, null=True)
 
     exchange = models.IntegerField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.symbol

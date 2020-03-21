@@ -5,5 +5,10 @@ from workers.scrapperservice.main import scrap
 
 
 @shared_task
+def add(a, b):
+    return a+b
+
+
+@shared_task
 def scrapTicker(ticker):
-    scrap(ticker)
+    return scrap(ticker)

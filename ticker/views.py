@@ -7,16 +7,44 @@ from django.contrib.auth.models import User, Group
 from ticker.serializers import TickerSerializer
 from ticker.models import Ticker
 from rest_framework.views import APIView, Response
-
+from django.http import Http404
 from rest_framework import generics
+from rest_framework import status
+import datetime
 
 
 class CustomView(APIView):
+
+    def get_object(self, symbol):
+        try:
+            return Ticker.objects.get(symbol=symbol)
+        except Ticker.DoesNotExist:
+            return Http404
+
     def get(self, request, *args, **kwargs):
-        return Response("Some Get Response")
+        now = datetime.datetime.now()
+        html = "<html><body>It is now %s.</body></html>" % now
+        return Response(html)
 
     def post(self, request, format=None):
         return Response("Some Post Response")
+
+    def put(self, request, format=None):
+        data = request.data
+        ticker = self.get_object(data["symbol"])
+        if ticker == Http404:
+            print("insert")
+            serializer = TickerSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serializer = TickerSerializer(ticker, data=request.data)
+            if (serializer.is_valid()):
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TickerViewSet(viewsets.ModelViewSet):

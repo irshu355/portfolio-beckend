@@ -71,11 +71,11 @@ class NasdaqScrapperService:
         industry = summaryJson["data"]["summaryData"]["Industry"]["value"]
 
         fifty_two_week_low = summaryJson["data"]["summaryData"]["FiftTwoWeekHighLow"]["value"].split(
-            "/")[0]  # xxxx
-        fifty_two_week_high = summaryJson["data"]["summaryData"]["FiftTwoWeekHighLow"]["value"].split(
             "/")[1]  # xxxx
-        day_low = summaryJson["data"]["summaryData"]["TodayHighLow"]["value"].split(
+        fifty_two_week_high = summaryJson["data"]["summaryData"]["FiftTwoWeekHighLow"]["value"].split(
             "/")[0]  # xxxx
+        day_low = summaryJson["data"]["summaryData"]["TodayHighLow"]["value"].split(
+            "/")[1]  # xxxx
         day_high = summaryJson["data"]["summaryData"]["TodayHighLow"]["value"].split(
             "/")[0]  # xxxx
 

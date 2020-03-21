@@ -1,4 +1,6 @@
 from workers.scrapperservice.factory.scrapper import Scrapper
+from workers.scrapperservice.dalmanager import DALManager
+
 
 config = {
     'spotify_client_key': 'THE_SPOTIFY_CLIENT_KEY',
@@ -10,11 +12,9 @@ config = {
 
 
 def scrap(ticker):
-
     x = Scrapper()
-
-    pandora = x.factory.create(
-        "NASDAQ", **config)
-    xx = pandora.scrapTicker(ticker)
-    # dal.postTicker(ticker)
-    return xx
+    dal = DALManager()
+    pandora = x.factory.create("NASDAQ", **config)
+    data = pandora.scrapTicker(ticker)
+    result = dal.postTicker(data)
+    return result
