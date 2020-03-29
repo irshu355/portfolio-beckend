@@ -11,32 +11,6 @@ from django.contrib.auth.models import User
 from ticker.utils.utils import UserTier
 
 
-class Options(models.Model):
-    contract_name = models.CharField(
-        unique=True, max_length=100, blank=False, null=False)
-    symbol = models.CharField(
-        unique=False, max_length=30, blank=False, null=False)
-
-    contract_type = models.CharField(
-        unique=False, max_length=1, blank=False, null=False)
-    strike = models.DecimalField(
-        max_digits=8, decimal_places=2)
-    iv = models.DecimalField(
-        max_digits=10, decimal_places=2)
-    change = models.DecimalField(
-        max_digits=10, decimal_places=2, blank=True, null=True)
-    volume = models.IntegerField(blank=True, null=True)
-    ask = models.DecimalField(
-        max_digits=8, decimal_places=2)
-    bid = models.DecimalField(
-        max_digits=8, decimal_places=2)
-    last_price = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=False, null=False)
-
-    created = models.DateTimeField(default=now, editable=False)
-    updated = models.DateTimeField(auto_now=True)
-
-
 class Ticker(models.Model):
     symbol = models.CharField(
         unique=True, max_length=30, blank=True, null=True)
@@ -111,3 +85,33 @@ class WatchList(models.Model):
     class Meta:
         managed = True
         db_table = 'watch_list'
+
+
+class Options(models.Model):
+    contract_name = models.CharField(
+        unique=True, max_length=100, blank=False, null=False)
+
+    ticker = models.ForeignKey(Ticker,
+                               on_delete=models.CASCADE)
+
+    contract_type = models.CharField(
+        unique=False, max_length=1, blank=False, null=False)
+    strike = models.DecimalField(
+        max_digits=8, decimal_places=2)
+    iv = models.DecimalField(
+        max_digits=10, decimal_places=2)
+    change = models.DecimalField(
+        max_digits=10, decimal_places=2, blank=True, null=True)
+    volume = models.IntegerField(blank=True, null=True)
+    ask = models.DecimalField(
+        max_digits=8, decimal_places=2)
+    bid = models.DecimalField(
+        max_digits=8, decimal_places=2)
+    last_price = models.DecimalField(
+        max_digits=8, decimal_places=2, blank=False, null=False)
+    expires = models.DateTimeField(null=False, blank=False)
+    created = models.DateTimeField(default=now, editable=False)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.contract_type + "->" + self.contract_name

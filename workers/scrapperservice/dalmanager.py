@@ -14,7 +14,7 @@ class DALManager:
         pass
 
     def postTicker(self, data):
-        ticker = self.get_object(data["symbol"])
+        ticker = self.get_ticker_object(data["symbol"])
         if ticker == Http404:
             print("insert")
             serializer = TickerSerializer(data=data)
@@ -29,7 +29,7 @@ class DALManager:
                 return data
             return "bad request, ticker worker failed to update"
 
-    def get_object(self, symbol):
+    def get_ticker_object(self, symbol):
         try:
             return Ticker.objects.get(symbol=symbol)
         except Ticker.DoesNotExist:

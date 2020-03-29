@@ -11,6 +11,7 @@ import re
 import csv
 import json
 from workers.models import OptionsScrapperSource
+from datetime import datetime
 
 
 class YFOptionScrapperService:
@@ -29,13 +30,80 @@ class YFOptionScrapperService:
 
         requestResponse = requests.get(url, verify=False)
         jsonRes = json.loads(requestResponse.text)
-        self.parseResponse(jsonRes)
+        expirations = self.parseExpirations(jsonRes)
+        self.scraptContracts(ticker, expirations)
 
-    def parseResponse(self, json):
+    def scraptContracts(self, ticker, expirations):
+        contracts = []
+        for exp in expirations:
+            url = 'https://query2.finance.yahoo.com/v7/finance/options/{0}?formatted=true&lang=en-US&region=US&date={1}&corsDomain=finance.yahoo.com'.format(
+                ticker, exp)
+            requestResponse = requests.get(url, verify=False)
+            jsonRes = json.loads(requestResponse.text)
+            options = jsonRes["optionChain"]["result"][0]["options"]
+            calls = options[0]["calls"]
+            puts = options[0]["puts"]
+
+            for c in calls:
+                obj = self.getOptionObj(c, exp, ticker)
+                obj["contract_type"] = "C"
+                contracts.append(obj)
+
+            for p in puts:
+                obj = self.getOptionObj(p, exp, ticker)
+                obj["contract_type"] = "P"
+                contracts.append(obj)
+        return contracts
+
+    def getOptionObj(self, contractObj, timestamp, underlyingSymbol):
+        obj = {}
+        obj["symbol"] = underlyingSymbol
+        obj["contract_name"] = contractObj["contractSymbol"]
+        obj["contract_type"] = "C"
+        obj["strike"] = contractObj["strike"]["raw"]
+        obj["iv"] = contractObj["impliedVolatility"]["fmt"]
+        obj["change"] = contractObj["change"]["fmt"]
+        if 'volume' in contractObj:
+            obj["volume"] = contractObj["volume"]["fmt"]
+        else:
+            obj["volume"] = 0.00
+        obj["ask"] = contractObj["ask"]["raw"]
+        obj["bid"] = contractObj["bid"]["raw"]
+        obj["last_price"] = contractObj["lastPrice"]["raw"]
+
+        expires = datetime.fromtimestamp(timestamp)
+        obj["expires"] = expires
+
+        return obj
+
+    #             contract_name = models.CharField(
+    #     unique=True, max_length=100, blank=False, null=False)
+
+    # ticker = models.ForeignKey(Ticker,
+    #                            on_delete=models.CASCADE)
+
+    # contract_type = models.CharField(
+    #     unique=False, max_length=1, blank=False, null=False)
+    # strike = models.DecimalField(
+    #     max_digits=8, decimal_places=2)
+    # iv = models.DecimalField(
+    #     max_digits=10, decimal_places=2)
+    # change = models.DecimalField(
+    #     max_digits=10, decimal_places=2, blank=True, null=True)
+    # volume = models.IntegerField(blank=True, null=True)
+    # ask = models.DecimalField(
+    #     max_digits=8, decimal_places=2)
+    # bid = models.DecimalField(
+    #     max_digits=8, decimal_places=2)
+    # last_price = models.DecimalField(
+    #     max_digits=8, decimal_places=2, blank=False, null=False)
+    # expires = models.DateTimeField(null=False, blank=False)
+    # created = models.DateTimeField(default=now, editable=False)
+    # updated = models.DateTimeField(auto_now=True)
+
+    def parseExpirations(self, json):
         expirations = json["optionChain"]["result"][0]["expirationDates"]
-        for expiry in expirations:
-            print(expiry)
-        pass
+        return expirations
 
 
 class YFOptionScrapperServiceBuilder:

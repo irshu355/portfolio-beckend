@@ -30,4 +30,5 @@ def _scrapOption(ticker):
     x = Scrapper()
     dal = DALManager()
     optionInstance = x.getScrapperOption()
-    data = optionInstance().scrapOption(ticker)
+    contracts = optionInstance().scrapOption(ticker)
+    print(contracts)
