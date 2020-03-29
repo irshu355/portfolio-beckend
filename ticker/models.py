@@ -9,13 +9,14 @@ from django.db import models
 from django.utils.timezone import now
 from django.contrib.auth.models import User
 from ticker.utils.utils import UserTier
+from decimal import Decimal
 
 
 class Ticker(models.Model):
     symbol = models.CharField(
         unique=True, max_length=30, blank=True, null=True)
     price = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
     name = models.CharField(unique=True, max_length=80, blank=True, null=True)
     sector = models.CharField(
         unique=True, max_length=90, blank=True, null=True)
@@ -23,23 +24,23 @@ class Ticker(models.Model):
         unique=True, max_length=90, blank=True, null=True)
 
     previous_close = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
 
     fifty_two_week_low = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
     fifty_two_week_high = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
 
     day_low = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
     day_high = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
 
     volume = models.IntegerField(blank=True, null=True)
     pe_ratio = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
     eps = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True)
     market_cap = models.BigIntegerField(blank=True, null=True)
 
     exchange = models.IntegerField(blank=True, null=True)
@@ -97,18 +98,18 @@ class Options(models.Model):
     contract_type = models.CharField(
         unique=False, max_length=1, blank=False, null=False)
     strike = models.DecimalField(
-        max_digits=8, decimal_places=2)
+        max_digits=20, decimal_places=10)
     iv = models.DecimalField(
-        max_digits=10, decimal_places=2)
+        max_digits=20, decimal_places=10, default=Decimal('0.00'))
     change = models.DecimalField(
-        max_digits=10, decimal_places=2, blank=True, null=True)
-    volume = models.IntegerField(blank=True, null=True)
+        max_digits=20, decimal_places=10, blank=True, null=True, default=Decimal('0.00'))
+    volume = models.IntegerField(blank=True, null=True, default=0)
     ask = models.DecimalField(
-        max_digits=8, decimal_places=2)
+        max_digits=20, decimal_places=10, default=Decimal('0.00'))
     bid = models.DecimalField(
-        max_digits=8, decimal_places=2)
+        max_digits=20, decimal_places=10, default=Decimal('0.00'))
     last_price = models.DecimalField(
-        max_digits=8, decimal_places=2, blank=False, null=False)
+        max_digits=20, decimal_places=10, blank=True, null=True, default=Decimal('0.00'))
     expires = models.DateTimeField(null=False, blank=False)
     created = models.DateTimeField(default=now, editable=False)
     updated = models.DateTimeField(auto_now=True)

@@ -4,7 +4,7 @@ from workers.scrapperservice.dalmanager import DALManager
 # stock quotes
 
 
-def scrap(ticker):
+def _scrap(ticker):
     x = Scrapper()
     dal = DALManager()
     tickerInstance = x.getScrapper()
@@ -13,7 +13,7 @@ def scrap(ticker):
     return result
 
 
-def scrapAll():
+def _scrapAll():
     scrapper = Scrapper()
     dal = DALManager()
     list = dal.getTickers()
@@ -24,11 +24,34 @@ def scrapAll():
     return "ok"
 
 
+def _scrapWatchListTickers():
+    scrapper = Scrapper()
+    dal = DALManager()
+    list = dal.getWatchList()
+    tickerInstance = scrapper.getScrapper()
+    for watch in list:
+        data = tickerInstance().scrapTicker(watch.ticker.symbol)
+        dal.postTicker(data)
+    return "ok"
+
+
 # stock options
+
+def _scrapWatchOptions():
+    x = Scrapper()
+    dal = DALManager()
+    optionInstance = x.getScrapperOption()
+    list = dal.getWatchList()
+    for watch in list:
+        contracts = optionInstance().scrapOption(watch.ticker.symbol)
+        dal.postOptions(contracts)
+    return "ok"
+
 
 def _scrapOption(ticker):
     x = Scrapper()
     dal = DALManager()
     optionInstance = x.getScrapperOption()
     contracts = optionInstance().scrapOption(ticker)
-    print(contracts)
+    dal.postOptions(contracts)
+    return "ok"

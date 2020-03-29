@@ -12,6 +12,7 @@ import csv
 import json
 from workers.models import OptionsScrapperSource
 from datetime import datetime
+from decimal import Decimal
 
 
 class YFOptionScrapperService:
@@ -25,13 +26,14 @@ class YFOptionScrapperService:
 
     def scrapOption(self, ticker):
 
-        url = 'https://query2.finance.yahoo.com/v7/finance/options/{}?formatted=true&lang=en-US&region=US&date=1600387200&corsDomain=finance.yahoo.com'.format(
+        url = 'https://query2.finance.yahoo.com/v7/finance/options/{}?formatted=true&lang=en-US&region=US&corsDomain=finance.yahoo.com'.format(
             ticker)
 
         requestResponse = requests.get(url, verify=False)
         jsonRes = json.loads(requestResponse.text)
         expirations = self.parseExpirations(jsonRes)
-        self.scraptContracts(ticker, expirations)
+        contracts = self.scraptContracts(ticker, expirations)
+        return contracts
 
     def scraptContracts(self, ticker, expirations):
         contracts = []
@@ -40,7 +42,16 @@ class YFOptionScrapperService:
                 ticker, exp)
             requestResponse = requests.get(url, verify=False)
             jsonRes = json.loads(requestResponse.text)
-            options = jsonRes["optionChain"]["result"][0]["options"]
+
+            if 'finance' in jsonRes:
+                if jsonRes["finance"]["error"]["code"]:
+                    continue
+
+            if 'optionChain' in jsonRes:
+                options = jsonRes["optionChain"]["result"][0]["options"]
+            else:
+                options = jsonRes["options"]
+
             calls = options[0]["calls"]
             puts = options[0]["puts"]
 
@@ -61,15 +72,29 @@ class YFOptionScrapperService:
         obj["contract_name"] = contractObj["contractSymbol"]
         obj["contract_type"] = "C"
         obj["strike"] = contractObj["strike"]["raw"]
-        obj["iv"] = contractObj["impliedVolatility"]["fmt"]
-        obj["change"] = contractObj["change"]["fmt"]
+
+        if 'impliedVolatility' in contractObj:
+
+            obj["iv"] = self.getSanitizedDecimal(
+                contractObj["impliedVolatility"]["raw"])
+            #obj["iv"] = 1.00
+
+        if 'change' in contractObj:
+            obj["change"] = self.getSanitizedDecimal(
+                contractObj["change"]["raw"])
+
         if 'volume' in contractObj:
-            obj["volume"] = contractObj["volume"]["fmt"]
-        else:
-            obj["volume"] = 0.00
-        obj["ask"] = contractObj["ask"]["raw"]
-        obj["bid"] = contractObj["bid"]["raw"]
-        obj["last_price"] = contractObj["lastPrice"]["raw"]
+            obj["volume"] = contractObj["volume"]["raw"]
+
+        if 'ask' in contractObj:
+            obj["ask"] = self.getSanitizedDecimal(contractObj["ask"]["raw"])
+
+        if 'bid' in contractObj:
+            obj["bid"] = self.getSanitizedDecimal(contractObj["bid"]["raw"])
+
+        if 'last_price' in contractObj:
+            obj["last_price"] = self.getSanitizedDecimal(
+                contractObj["lastPrice"]["raw"])
 
         expires = datetime.fromtimestamp(timestamp)
         obj["expires"] = expires
@@ -104,6 +129,10 @@ class YFOptionScrapperService:
     def parseExpirations(self, json):
         expirations = json["optionChain"]["result"][0]["expirationDates"]
         return expirations
+
+    def getSanitizedDecimal(self, value):
+        toDecimal = Decimal(value)
+        return round(toDecimal, 10)
 
 
 class YFOptionScrapperServiceBuilder:

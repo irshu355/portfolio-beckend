@@ -11,4 +11,10 @@ class OptionsScrapperSource(Enum):
     Zachs = "Zachs"
     YF = "YF"
 
-# Create your models here.
+
+class UpdateError:
+
+    def __Init__(self, error):
+        self.error = error
+
+        # Create your models here.

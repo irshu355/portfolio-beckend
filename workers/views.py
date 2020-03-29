@@ -2,12 +2,12 @@ from __future__ import absolute_import, unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
-from workers.tasks import scrapTicker, add, scrapTickers, scrapOption
+from workers.tasks import scrapTicker, add, scrapTickers, scrapWatchOptions, scrapWatchListTickers, scrapOption
 from ticker.models import Ticker
 
 # Create your tasks here
 from celery import shared_task
-from workers.scrapperservice.main import scrap
+from workers.scrapperservice.main import _scrap
 from django.http import Http404
 from rest_framework import status
 from ticker.serializers import TickerSerializer
@@ -28,3 +28,9 @@ def scrap_quote(request):
 
 def scrap_option(request):
     scrapOption('AAPL')
+    return HttpResponse("html")
+
+
+def scrap_watchlist_options(request):
+    scrapWatchOptions()
+    return HttpResponse("html")
