@@ -4,8 +4,8 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
 from django.contrib.auth.models import User, Group
-from ticker.serializers import TickerSerializer
-from ticker.models import Ticker
+from ticker.serializers import TickerSerializer, WatchListSerializer
+from ticker.models import Ticker, WatchList
 from rest_framework.views import APIView, Response
 from django.http import Http404
 from rest_framework import generics
@@ -13,7 +13,7 @@ from rest_framework import status
 import datetime
 
 
-class CustomView(APIView):
+class TickerApi(APIView):
 
     def get_object(self, symbol):
         try:
@@ -50,6 +50,12 @@ class CustomView(APIView):
 class TickerViewSet(viewsets.ModelViewSet):
     serializer_class = TickerSerializer
     queryset = Ticker.objects.all()
+    #permission_classes = [permissions.IsAuthenticated]
+
+
+class WatchListViewSet(viewsets.ModelViewSet):
+    serializer_class = WatchListSerializer
+    queryset = WatchList.objects.all()
     #permission_classes = [permissions.IsAuthenticated]
 
 

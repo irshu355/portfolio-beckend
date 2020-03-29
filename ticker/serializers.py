@@ -6,3 +6,9 @@ class TickerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticker
         fields = "__all__"
+
+
+class WatchListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WatchList
+        fields = "__all__"

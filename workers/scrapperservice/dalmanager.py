@@ -34,3 +34,6 @@ class DALManager:
             return Ticker.objects.get(symbol=symbol)
         except Ticker.DoesNotExist:
             return Http404
+
+    def getTickers(self):
+        return Ticker.objects.all()

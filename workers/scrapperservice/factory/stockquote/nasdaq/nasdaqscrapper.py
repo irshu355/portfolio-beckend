@@ -10,6 +10,7 @@ import os.path
 import re
 import csv
 import json
+from workers.models import TickerScrapperSource
 
 
 class NasdaqScrapperService:
@@ -17,6 +18,7 @@ class NasdaqScrapperService:
     def __init__(self, consumer_key, consumer_secret):
         self._key = consumer_key
         self._secret = consumer_secret
+        self.name = TickerScrapperSource.NASDAQ.value
 
     def test_connection(self):
         print(f'Accessing Pandora with {self._key} and {self._secret}')
