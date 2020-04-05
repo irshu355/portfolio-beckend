@@ -21,5 +21,6 @@ from ticker import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     re_path('api/v1/services/', include('ticker.urls')),
-    re_path('api/v1/workers/', include('workers.urls'))
+    re_path('api/v1/workers/', include('workers.urls')),
+    path('', include('frontend.urls'))
 ]

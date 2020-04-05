@@ -12,6 +12,23 @@ from ticker.utils.utils import UserTier
 from decimal import Decimal
 
 
+class Symbol(models.Model):
+    symbol = models.CharField(
+        unique=True, max_length=30, blank=True, null=True)
+    security_name = models.CharField(
+        max_length=300, blank=True, null=True)
+    exchange = models.IntegerField(blank=True, null=True)
+    created = models.DateTimeField(default=now, editable=False)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.symbol + " - "+self.security_name
+
+    class Meta:
+        managed = True
+        db_table = 'symbols'
+
+
 class Ticker(models.Model):
     symbol = models.CharField(
         unique=True, max_length=30, blank=True, null=True)
@@ -52,7 +69,7 @@ class Ticker(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'ticker'
+        db_table = 'tickers'
 
 
 class UserProfile(models.Model):
@@ -68,7 +85,7 @@ class UserProfile(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'user_profile'
+        db_table = 'user_profiles'
 
     # tier 99 => normal user, 100 =>Premium user, 101
 
@@ -85,10 +102,10 @@ class WatchList(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'watch_list'
+        db_table = 'watch_lists'
 
 
-class Options(models.Model):
+class Option(models.Model):
     contract_name = models.CharField(
         unique=True, max_length=100, blank=False, null=False)
 
@@ -116,3 +133,7 @@ class Options(models.Model):
 
     def __str__(self):
         return self.contract_type + "->" + self.contract_name
+
+    class Meta:
+        managed = True
+        db_table = 'options'

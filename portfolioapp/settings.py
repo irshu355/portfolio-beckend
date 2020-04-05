@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ticker.apps.TickerConfig',
     'workers.apps.WorkersConfig',
+    'frontend.apps.FrontendConfig',
     'rest_framework',
     'django_celery_results',
     'django_celery_beat',

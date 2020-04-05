@@ -1,8 +1,36 @@
 from workers.scrapperservice.factory.scrapper import Scrapper
 from workers.scrapperservice.dalmanager import DALManager
+import pandas as pd
+import os
+from django.conf import settings
 
+
+def _scrapSymbols(nasdaqListed):
+    symbols = []
+    dal = DALManager()
+    path = os.path.join(
+        settings.BASE_DIR, 'nasdaqlisted.csv' if nasdaqListed else 'otherlisted.csv')
+
+    data = pd.read_csv(path)
+    for index, row in data.iterrows():
+        if not nasdaqListed and row["Exchange"] != "N":
+            continue
+
+        obj = {}
+        obj["symbol"] = row["Symbol"] if nasdaqListed else row["ACT Symbol"]
+        obj["security_name"] = row["Security Name"]
+        if nasdaqListed:
+            obj["exchange"] = 0
+        else:
+            obj["exchange"] = 1
+        symbols.append(obj)
+    dal.postSymbols(symbols)
+    pass
+
+
+#
 # stock quotes
-
+#
 
 def _scrap(ticker):
     x = Scrapper()
@@ -35,7 +63,9 @@ def _scrapWatchListTickers():
     return "ok"
 
 
+#
 # stock options
+#
 
 def _scrapWatchOptions():
     x = Scrapper()

@@ -15,6 +15,7 @@ import datetime
 
 class TickerApi(APIView):
 
+
     def get_object(self, symbol):
         try:
             return Ticker.objects.get(symbol=symbol)

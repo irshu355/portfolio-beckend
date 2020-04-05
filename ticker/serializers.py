@@ -2,6 +2,12 @@ from rest_framework import serializers
 from .models import *
 
 
+class SymbolsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Symbol
+        fields = "__all__"
+
+
 class TickerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticker
@@ -16,5 +22,5 @@ class WatchListSerializer(serializers.ModelSerializer):
 
 class OptionsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Options
+        model = Option
         fields = "__all__"
