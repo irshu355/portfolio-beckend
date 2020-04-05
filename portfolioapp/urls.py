@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     re_path('api/v1/services/', include('ticker.urls')),
     re_path('api/v1/workers/', include('workers.urls')),
-    path('', include('frontend.urls'))
+    path('', include('frontend.urls')),
+    path(r'auth/', include('djoser.urls')),
 ]

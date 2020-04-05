@@ -24,3 +24,9 @@ class OptionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
         fields = "__all__"
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = "__all__"
