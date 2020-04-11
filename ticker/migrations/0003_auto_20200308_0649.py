@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ticker', '0002_auto_20200308_0648'),
+        ('ticker', '0001_initial'),
     ]
 
     operations = [
@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ticker',
             name='sector',
-            field=models.CharField(blank=True, max_length=90, null=True, unique=True),
+            field=models.CharField(
+                blank=True, max_length=90, null=True, unique=True),
         ),
     ]
