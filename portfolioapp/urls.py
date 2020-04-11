@@ -23,5 +23,6 @@ urlpatterns = [
     re_path('api/v1/services/', include('ticker.urls')),
     re_path('api/v1/workers/', include('workers.urls')),
     path('', include('frontend.urls')),
-    path(r'auth/', include('djoser.urls')),
+    path(r'api/auth-manage/', include('djoser.urls')),
+    path('api/auth/', include('djoser.urls.authtoken')),
 ]
