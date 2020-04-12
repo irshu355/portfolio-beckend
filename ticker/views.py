@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from django.contrib.auth.models import User, Group
 from ticker.serializers import TickerSerializer, WatchListSerializer
-from ticker.models import Ticker, WatchList
+from ticker.models import Ticker, WatchList, Option
 from rest_framework.views import APIView, Response
 from django.http import Http404
 from rest_framework import generics
@@ -22,7 +22,19 @@ def getWatchListByUserId(request):
     queryset = WatchList.objects.select_related('ticker').all()
     list = []
     for obj in queryset:
-        print(list.append(obj.ticker))
+        list.append(obj.ticker)
+
+    serializer = TickerSerializer(list, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getOptionsByUserId(request):
+    queryset = WatchList.objects.select_related('ticker').all()
+    list = []
+    for obj in queryset:
+        if obj.subscribe_options:
+            pass
 
     serializer = TickerSerializer(list, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

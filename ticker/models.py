@@ -96,6 +96,7 @@ class WatchList(models.Model):
     created = models.DateTimeField(default=now, editable=False)
     updated = models.DateTimeField(auto_now=True)
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
+    subscribe_options = models.IntegerField(default=0)
 
     def __str__(self):
         return self.owner.user.email + " => "+self.ticker.symbol
