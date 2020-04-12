@@ -11,10 +11,21 @@ from django.http import Http404
 from rest_framework import generics
 from rest_framework import status
 import datetime
+from rest_framework.decorators import api_view
+import json
+from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
+
+
+@api_view(['GET'])
+def getWatchListByUserId(request):
+    queryset = WatchList.objects.select_related().all()
+    serializer = WatchListSerializer(queryset, many=True)
+    data = list(queryset)
+    return Response(data, status=status.HTTP_200_OK)
 
 
 class TickerApi(APIView):
-
 
     def get_object(self, symbol):
         try:
@@ -56,7 +67,7 @@ class TickerViewSet(viewsets.ModelViewSet):
 
 class WatchListViewSet(viewsets.ModelViewSet):
     serializer_class = WatchListSerializer
-    queryset = WatchList.objects.all()
+    queryset = WatchList.objects.prefetch_related('ticker').all()
     #permission_classes = [permissions.IsAuthenticated]
 
 

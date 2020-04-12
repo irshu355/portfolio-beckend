@@ -15,15 +15,15 @@ from rest_framework.views import APIView, Response
 
 
 def scrap_quote(request):
-    # now = datetime.datetime.now()
+    now = datetime.datetime.now()
     # scrapTicker.delay('AAPL')
-    # html = "<html><body>It is now %s.</body></html>" % now
+    html = "<html><body>It is now %s.</body></html>" % now
     # return HttpResponse(html)
 
     scrapTickers()
 
     # scrapTickers.delay()
-    # return HttpResponse("html")
+    return HttpResponse(html)
 
 
 def scrap_option(request):
