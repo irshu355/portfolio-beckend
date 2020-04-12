@@ -19,10 +19,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 @api_view(['GET'])
 def getWatchListByUserId(request):
-    queryset = WatchList.objects.select_related().all()
-    serializer = WatchListSerializer(queryset, many=True)
-    data = list(queryset)
-    return Response(data, status=status.HTTP_200_OK)
+    queryset = WatchList.objects.select_related('ticker').all()
+    list = []
+    for obj in queryset:
+        print(list.append(obj.ticker))
+
+    serializer = TickerSerializer(list, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TickerApi(APIView):
@@ -62,13 +65,13 @@ class TickerApi(APIView):
 class TickerViewSet(viewsets.ModelViewSet):
     serializer_class = TickerSerializer
     queryset = Ticker.objects.all()
-    #permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class WatchListViewSet(viewsets.ModelViewSet):
     serializer_class = WatchListSerializer
     queryset = WatchList.objects.prefetch_related('ticker').all()
-    #permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class ListTickerView(generics.ListAPIView):
