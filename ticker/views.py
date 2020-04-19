@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
 from django.contrib.auth.models import User, Group
-from ticker.serializers import TickerSerializer, WatchListSerializer
+from ticker.serializers import TickerSerializer, WatchListSerializer, OptionsExpirySerializer, OptionsSerializer
 from ticker.models import Ticker, WatchList, Option
 from rest_framework.views import APIView, Response
 from django.http import Http404
@@ -29,14 +29,33 @@ def getWatchListByUserId(request):
 
 
 @api_view(['GET'])
-def getOptionsByUserId(request):
-    queryset = WatchList.objects.select_related('ticker').all()
-    list = []
-    for obj in queryset:
-        if obj.subscribe_options:
-            pass
+def getOptionsByTicker(request):
+    ticker = request.GET['ticker']
+    querySet = Option.objects.filter(
+        ticker__symbol=ticker)
 
-    serializer = TickerSerializer(list, many=True)
+    serializer = OptionsSerializer(querySet, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getOptionsByExpiry(request):
+    ticker = request.GET['ticker']
+    expires = request.GET['expires']
+    querySet = Option.objects.filter(
+        ticker__symbol=ticker).filter(expires=expires)
+
+    serializer = OptionsSerializer(querySet, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getOptionsExpiries(request):
+    ticker = request.GET['ticker']
+    querySet = Option.objects.values('expires').filter(
+        ticker__symbol=ticker).distinct()
+
+    serializer = OptionsExpirySerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

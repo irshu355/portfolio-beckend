@@ -26,6 +26,12 @@ class OptionsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class OptionsExpirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Option
+        fields = ['expires']
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
