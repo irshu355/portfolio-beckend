@@ -4,8 +4,8 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
 from django.contrib.auth.models import User, Group
-from ticker.serializers import TickerSerializer, WatchListSerializer, OptionsExpirySerializer, OptionsSerializer
-from ticker.models import Ticker, WatchList, Option
+from ticker.serializers import TickerSerializer, WatchListSerializer, OptionsExpirySerializer, SymbolsSerializer, OptionsSerializer
+from ticker.models import Ticker, WatchList, Option, Symbol
 from rest_framework.views import APIView, Response
 from django.http import Http404
 from rest_framework import generics
@@ -25,6 +25,14 @@ def getWatchListByUserId(request):
         list.append(obj.ticker)
 
     serializer = TickerSerializer(list, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getSymbols(request):
+    symbol = request.GET['symbol']
+    querySet = Symbol.objects.filter(symbol__startswith=symbol)
+    serializer = SymbolsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

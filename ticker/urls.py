@@ -1,5 +1,5 @@
 from django.urls import include, path
-from ticker.views import ListTickerView, TickerApi, TickerViewSet, WatchListViewSet, getWatchListByUserId, getOptionsExpiries, getOptionsByTicker, getOptionsByExpiry
+from ticker.views import *
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -14,6 +14,7 @@ urlpatterns = [
     path(r'option_expiries_by_ticker', getOptionsExpiries),
     path(r'options_by_ticker', getOptionsByTicker),
     path(r'options_by_expiry', getOptionsByExpiry),
+    path(r'symbols', getSymbols),
 ]
 
 urlpatterns += router.urls

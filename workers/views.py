@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
-from workers.tasks import scrapTicker, add, scrapTickers, scrapWatchOptions, scrapWatchListTickers, scrapOption, scrapSymbols
+from workers.tasks import scrapTicker, add, scrapTickers, scrapWatchOptions, scrapWatchListTickers, scrapOption, scrapSymbolsNasdaq, scrapSymbolsNYSE
 from ticker.models import Ticker
 
 # Create your tasks here
@@ -37,5 +37,10 @@ def scrap_watchlist_options(request):
 
 
 def scrap_symbols(request):
-    scrapSymbols()
+    type = request.GET['type']
+    if (type == 'nasdaq'):
+        scrapSymbolsNasdaq()
+    else:
+        scrapSymbolsNYSE()
+
     return HttpResponse("html")

@@ -39,5 +39,10 @@ def scrapOption(ticker):
 
 
 @shared_task
-def scrapSymbols():
+def scrapSymbolsNasdaq():
     return _scrapSymbols(True)
+
+
+@shared_task
+def scrapSymbolsNYSE():
+    return _scrapSymbols(False)

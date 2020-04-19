@@ -12,7 +12,6 @@ import pandas
 
 class DALManager:
     def __init__(self):
-        self.urlStockManager = "http://127.0.0.1:8000/api/v1/stock-manager/"
         pass
 
     def postSymbols(self, data):
