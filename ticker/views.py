@@ -73,6 +73,7 @@ def getSymbols(request):
     list = []
     for rec in querySet:
         obj = {}
+        obj["id"] = rec.id
         obj["symbol"] = rec.symbol
         obj["security_name"] = rec.security_name
         obj["exchange"] = rec.exchange
