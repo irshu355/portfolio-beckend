@@ -4,7 +4,6 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'stocks-manager', TickerViewSet)
-router.register(r'watch-list-manager', WatchListViewSet)
 
 
 urlpatterns = [
@@ -14,6 +13,7 @@ urlpatterns = [
     path(r'option_expiries_by_ticker', getOptionsExpiries),
     path(r'options_by_ticker', getOptionsByTicker),
     path(r'options_by_expiry', getOptionsByExpiry),
+    path(r'toggle_watchlist', toggleWatchlist),
     path(r'symbols', getSymbols),
 ]
 

@@ -36,9 +36,9 @@ class Ticker(models.Model):
         max_digits=20, decimal_places=10, blank=True, null=True)
     name = models.CharField(unique=True, max_length=80, blank=True, null=True)
     sector = models.CharField(
-        unique=True, max_length=90, blank=True, null=True)
+        unique=False, max_length=90, blank=True, null=True)
     industry = models.CharField(
-        unique=True, max_length=90, blank=True, null=True)
+        unique=False, max_length=90, blank=True, null=True)
 
     previous_close = models.DecimalField(
         max_digits=20, decimal_places=10, blank=True, null=True)

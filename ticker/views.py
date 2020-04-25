@@ -5,7 +5,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from django.contrib.auth.models import User, Group
 from ticker.serializers import TickerSerializer, WatchListSerializer, OptionsExpirySerializer, SymbolsSerializer, OptionsSerializer
-from ticker.models import Ticker, WatchList, Option, Symbol
+from ticker.models import Ticker, WatchList, Option, Symbol, UserProfile
 from rest_framework.views import APIView, Response
 from django.http import Http404
 from rest_framework import generics
@@ -15,6 +15,36 @@ from rest_framework.decorators import api_view
 import json
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
+from rest_framework.authtoken.models import Token
+from workers.scrapperservice.dalmanager import DALManager
+from workers.scrapperservice import main
+from django.http import QueryDict, JsonResponse
+
+
+@api_view(['POST'])
+def toggleWatchlist(request):
+    symbol = QueryDict(request.body)['ticker']
+    token = request.headers['authorization'].split('Bearer ')[1]
+    user = Token.objects.get(key=token).user
+    profile = UserProfile.objects.get(user__email=user.email)
+    ticker = Ticker.objects.filter(symbol=symbol).first()
+    watchItem = WatchList.objects.filter(
+        ticker__symbol=symbol).filter(owner=profile).first()
+    if ticker == None or watchItem == None:
+        dalManager = DALManager()
+        data = main._scrap(symbol)
+
+        # try:
+        #     return Ticker.objects.get(symbol=symbol)
+        # except Ticker.DoesNotExist:
+        #     return Http404
+
+    if watchItem == None:
+        ticker = Ticker.objects.filter(symbol=symbol).first()
+        obj = WatchList.objects.create(ticker=ticker, owner=profile)
+    else:
+        watchItem.delete()
+    return JsonResponse({'subscribed': 1 if watchItem == None else 0})
 
 
 @api_view(['GET'])
@@ -31,9 +61,27 @@ def getWatchListByUserId(request):
 @api_view(['GET'])
 def getSymbols(request):
     symbol = request.GET['symbol']
-    querySet = Symbol.objects.filter(symbol__startswith=symbol)
-    serializer = SymbolsSerializer(querySet, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+
+    token = request.headers['authorization'].split('Bearer ')[1]
+    user = Token.objects.get(key=token).user
+
+    watchList = WatchList.objects.filter(owner__user=user)
+
+    querySet = Symbol.objects.filter(
+        symbol__startswith=symbol).order_by('symbol')
+
+    list = []
+    for rec in querySet:
+        obj = {}
+        obj["symbol"] = rec.symbol
+        obj["security_name"] = rec.security_name
+        obj["exchange"] = rec.exchange
+        subscribed = watchList.filter(
+            ticker__symbol=rec.symbol).first()
+        obj["subscribed"] = 0 if subscribed == None else 1
+        list.append(obj)
+
+    return JsonResponse(list, safe=False)
 
 
 @api_view(['GET'])
@@ -104,12 +152,6 @@ class TickerApi(APIView):
 class TickerViewSet(viewsets.ModelViewSet):
     serializer_class = TickerSerializer
     queryset = Ticker.objects.all()
-    # permission_classes = [permissions.IsAuthenticated]
-
-
-class WatchListViewSet(viewsets.ModelViewSet):
-    serializer_class = WatchListSerializer
-    queryset = WatchList.objects.prefetch_related('ticker').all()
     # permission_classes = [permissions.IsAuthenticated]
 
 
