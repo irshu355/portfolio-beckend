@@ -44,7 +44,7 @@ def toggleWatchlist(request):
         obj = WatchList.objects.create(ticker=ticker, owner=profile)
     else:
         watchItem.delete()
-    return JsonResponse({symbol: symbol, 'subscribed': 1 if watchItem == None else 0})
+    return JsonResponse({'symbol': symbol, 'subscribed': 1 if watchItem == None else 0})
 
 
 @api_view(['GET'])
