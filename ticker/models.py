@@ -73,7 +73,7 @@ class Ticker(models.Model):
         max_digits=20, decimal_places=10, blank=True, null=True)
 
     ex_divident_date = models.CharField(
-        unique=True, max_length=100, blank=True, null=True)
+        unique=False, max_length=100, blank=True, null=True)
 
     exchange = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(default=now, editable=False)
