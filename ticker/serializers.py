@@ -29,7 +29,7 @@ class OptionsSerializer(serializers.ModelSerializer):
 class OptionsExpirySerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
-        fields = ['expires']
+        fields = ['expires', 'id']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
