@@ -117,9 +117,9 @@ class NasdaqScrapperService:
         data["ninety_day_avg_volume"] = int(
             ''.join(e for e in ninetyDayVolume if e.isdigit() or e == '.'))
         data["forwardpe_one_year"] = float(
-            ''.join(e for e in forwardpe_one_year if e.isdigit() or e == '.'))
+            ''.join(e for e in forwardpe_one_year if e.isdigit() or e == '.')) if self.hasNumbers(forwardpe_one_year) else 0.00
         data["annual_divident"] = float(
-            ''.join(e for e in annualizedDivident if e.isdigit() or e == '.'))
+            ''.join(e for e in annualizedDivident if e.isdigit() or e == '.')) if self.hasNumbers(annualizedDivident) else 0.00
         data["ex_divident_date"] = exDividentDate
 
         return data
@@ -147,6 +147,9 @@ class NasdaqScrapperService:
 
         #price, name, previuous_close, year_low,year_high,volume, pe_ratio,eps,market_cap,sector
         print(symbol)
+
+    def hasNumbers(self, inputString):
+        return any(char.isdigit() for char in inputString)
 
 
 class NasdaqScrapperServiceBuilder:
