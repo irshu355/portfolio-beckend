@@ -81,6 +81,12 @@ class NasdaqScrapperService:
         day_high = summaryJson["data"]["summaryData"]["TodayHighLow"]["value"].split(
             "/")[0]  # xxxx
 
+        ninetyDayVolume = summaryJson["data"]["summaryData"]["AverageVolume"]["value"]
+        y1Target = summaryJson["data"]["summaryData"]["OneYrTarget"]["value"]
+        forwardpe_one_year = summaryJson["data"]["summaryData"]["ForwardPE1Yr"]["value"]
+        annualizedDivident = summaryJson["data"]["summaryData"]["AnnualizedDividend"]["value"]
+        exDividentDate = summaryJson["data"]["summaryData"]["ExDividendDate"]["value"]
+
         data = {}
         data["symbol"] = symbol
         data["name"] = name
@@ -105,6 +111,17 @@ class NasdaqScrapperService:
         data["market_cap"] = int(
             ''.join(e for e in market_cap if e.isdigit() or e == '.'))
         data["exchange"] = exchange
+
+        data["y1target"] = float(
+            ''.join(e for e in y1Target if e.isdigit() or e == '.'))
+        data["ninety_day_avg_volume"] = int(
+            ''.join(e for e in ninetyDayVolume if e.isdigit() or e == '.'))
+        data["forwardpe_one_year"] = float(
+            ''.join(e for e in forwardpe_one_year if e.isdigit() or e == '.'))
+        data["annual_divident"] = float(
+            ''.join(e for e in annualizedDivident if e.isdigit() or e == '.'))
+        data["ex_divident_date"] = exDividentDate
+
         return data
 
     def parseTickerResponse(self, html):

@@ -14,6 +14,18 @@ from ticker.serializers import TickerSerializer
 from rest_framework.views import APIView, Response
 
 
+def scrap_ticker(request):
+    now = datetime.datetime.now()
+    # scrapTicker.delay('AAPL')
+    html = "<html><body>It is now %s.</body></html>" % now
+    # return HttpResponse(html)
+
+    scrapTicker('AAPL')
+
+    # scrapTickers.delay()
+    return HttpResponse(html)
+
+
 def scrap_quote(request):
     now = datetime.datetime.now()
     # scrapTicker.delay('AAPL')

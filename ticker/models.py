@@ -54,11 +54,26 @@ class Ticker(models.Model):
         max_digits=20, decimal_places=10, blank=True, null=True)
 
     volume = models.IntegerField(blank=True, null=True)
+
     pe_ratio = models.DecimalField(
         max_digits=20, decimal_places=10, blank=True, null=True)
     eps = models.DecimalField(
         max_digits=20, decimal_places=10, blank=True, null=True)
     market_cap = models.BigIntegerField(blank=True, null=True)
+
+    y1target = models.DecimalField(
+        max_digits=20, decimal_places=10, blank=True, null=True)
+
+    ninety_day_avg_volume = models.IntegerField(blank=True, null=True)
+
+    forwardpe_one_year = models.DecimalField(
+        max_digits=20, decimal_places=10, blank=True, null=True)
+
+    annual_divident = models.DecimalField(
+        max_digits=20, decimal_places=10, blank=True, null=True)
+
+    ex_divident_date = models.CharField(
+        unique=True, max_length=100, blank=True, null=True)
 
     exchange = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(default=now, editable=False)
