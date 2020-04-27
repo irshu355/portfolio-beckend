@@ -110,10 +110,11 @@ def getOptionsByExpiry(request):
 def getOptionsExpiries(request):
     ticker = request.GET['ticker']
     querySet = Option.objects.values('expires').filter(
-        ticker__symbol=ticker).distinct()
+        ticker__symbol=ticker).order_by('expires').distinct()
 
     serializer = OptionsExpirySerializer(querySet, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    response = {'ticker': ticker, 'data': serializer.data}
+    return Response(response, status=status.HTTP_200_OK)
 
 
 class TickerApi(APIView):
