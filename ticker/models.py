@@ -126,7 +126,7 @@ class Option(models.Model):
         unique=True, max_length=100, blank=False, null=False)
 
     ticker = models.ForeignKey(Ticker,
-                               on_delete=models.CASCADE)
+                               on_delete=models.CASCADE, related_name='options')
 
     contract_type = models.CharField(
         unique=False, max_length=1, blank=False, null=False)
@@ -149,6 +149,10 @@ class Option(models.Model):
 
     def __str__(self):
         return self.contract_type + "->" + self.contract_name
+
+    @property
+    def ticker_symbol(self):
+        return self.ticker.symbol
 
     class Meta:
         managed = True
