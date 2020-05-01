@@ -26,6 +26,17 @@ def scrap_ticker(request):
     return HttpResponse(html)
 
 
+def scrap_watchlist_tickers(request):
+
+    now = datetime.datetime.now()
+    # scrapTicker.delay('AAPL')
+    html = "<html><body>It is now %s.</body></html>" % now
+    # return HttpResponse(html)
+
+    scrapWatchListTickers()
+    return HttpResponse(html)
+
+
 def scrap_quote(request):
     now = datetime.datetime.now()
     # scrapTicker.delay('AAPL')
