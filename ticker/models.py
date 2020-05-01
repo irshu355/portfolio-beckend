@@ -151,7 +151,7 @@ class Option(models.Model):
         return self.contract_type + "->" + self.contract_name
 
     @property
-    def ticker_symbol(self):
+    def symbol(self):
         return self.ticker.symbol
 
     class Meta:

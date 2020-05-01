@@ -27,11 +27,11 @@ class OptionsSerializer(serializers.ModelSerializer):
 
 
 class OptionsExpirySerializer(serializers.ModelSerializer):
-    ticker_symbol = serializers.ReadOnlyField()
+    symbol = serializers.ReadOnlyField()
 
     class Meta:
         model = Option
-        fields = ['expires', 'id', 'ticker_symbol']
+        fields = ['expires', 'id', 'symbol']
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
