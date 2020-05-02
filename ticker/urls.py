@@ -13,6 +13,7 @@ urlpatterns = [
     path(r'option_expiries_by_ticker', getOptionsExpiries),
     path(r'options_by_ticker', getOptionsByTicker),
     path(r'options_by_expiry', getOptionsByExpiry),
+    path(r'options_by_iv', getOptionsByIV),
     path(r'toggle_watchlist', toggleWatchlist),
     path(r'symbols', getSymbols),
 ]

@@ -115,6 +115,16 @@ def getOptionsExpiries(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def getOptionsByIV(request):
+    ticker = request.GET['ticker']
+    querySet = Option.objects.filter(
+        ticker__symbol=ticker).order_by('-iv')[:10]
+
+    serializer = OptionsSerializer(querySet, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class TickerApi(APIView):
 
     def get_object(self, symbol):
