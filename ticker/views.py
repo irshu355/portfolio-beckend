@@ -116,10 +116,20 @@ def getOptionsExpiries(request):
 
 
 @api_view(['GET'])
-def getOptionsByIV(request):
+def getOptionsWithIvByTicker(request):
     ticker = request.GET['ticker']
     querySet = Option.objects.filter(
         ticker__symbol=ticker).order_by('-iv')[:10]
+
+    serializer = OptionsSerializer(querySet, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getOptionsWithVolByTicker(request):
+    ticker = request.GET['ticker']
+    querySet = Option.objects.filter(
+        ticker__symbol=ticker).order_by('-volume')[:10]
 
     serializer = OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
