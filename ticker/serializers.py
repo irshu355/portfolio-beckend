@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, ReadOnlyField
 from .models import *
 
 
@@ -21,6 +22,8 @@ class WatchListSerializer(serializers.ModelSerializer):
 
 
 class OptionsSerializer(serializers.ModelSerializer):
+    symbol = ReadOnlyField(source='ticker.symbol')
+
     class Meta:
         model = Option
         fields = "__all__"
