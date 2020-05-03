@@ -8,7 +8,7 @@ from ticker.models import Ticker
 # Create your tasks here
 from celery import shared_task
 from workers.scrapperservice.main import _scrap
-from django.http import Http404
+from django.http import Http404, QueryDict, JsonResponse
 from rest_framework import status
 from ticker.serializers import TickerSerializer
 from rest_framework.views import APIView, Response
@@ -50,8 +50,8 @@ def scrap_quote(request):
 
 
 def scrap_option(request):
-    scrapOption('AAPL')
-    return HttpResponse("html")
+    scrapOption(request.GET['symbol'])
+    return JsonResponse({'status': 200})
 
 
 def scrap_watchlist_options(request):
