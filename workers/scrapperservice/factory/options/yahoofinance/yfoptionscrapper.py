@@ -58,19 +58,28 @@ class YFOptionScrapperService:
             for c in calls:
                 obj = self.getOptionObj(c, exp, ticker)
                 obj["contract_type"] = "C"
+                obj["contract_name"] = self.buildContractName(
+                    "c", c, exp, ticker)
                 contracts.append(obj)
 
             for p in puts:
                 obj = self.getOptionObj(p, exp, ticker)
                 obj["contract_type"] = "P"
+                obj["contract_name"] = self.buildContractName(
+                    "c", c, exp, ticker)
                 contracts.append(obj)
         return contracts
+
+    def buildContractName(self, type, contractObj, timestamp, symbol):
+        expires = datetime.fromtimestamp(timestamp)
+        exp = expires.strftime("%m %d %y")
+        strike = '{:.2f}'.format(contractObj["strike"]["raw"])
+        contractName = type + symbol + "-" + exp + strike
+        return contractName
 
     def getOptionObj(self, contractObj, timestamp, underlyingSymbol):
         obj = {}
         obj["symbol"] = underlyingSymbol
-        obj["contract_name"] = contractObj["contractSymbol"]
-        obj["contract_type"] = "C"
         obj["strike"] = contractObj["strike"]["raw"]
 
         if 'impliedVolatility' in contractObj:
