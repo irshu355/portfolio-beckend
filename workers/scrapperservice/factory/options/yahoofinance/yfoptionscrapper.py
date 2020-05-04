@@ -59,20 +59,20 @@ class YFOptionScrapperService:
                 obj = self.getOptionObj(c, exp, ticker)
                 obj["contract_type"] = "C"
                 obj["contract_name"] = self.buildContractName(
-                    "c", c, exp, ticker)
+                    "C", c, exp, ticker)
                 contracts.append(obj)
 
             for p in puts:
                 obj = self.getOptionObj(p, exp, ticker)
                 obj["contract_type"] = "P"
                 obj["contract_name"] = self.buildContractName(
-                    "c", c, exp, ticker)
+                    "P", c, exp, ticker)
                 contracts.append(obj)
         return contracts
 
     def buildContractName(self, type, contractObj, timestamp, symbol):
         expires = datetime.fromtimestamp(timestamp)
-        exp = expires.strftime("%m %d %y")
+        exp = expires.strftime("%m%d%y")
         strike = '{:.2f}'.format(contractObj["strike"]["raw"])
         contractName = type + symbol + "-" + exp + strike
         return contractName
