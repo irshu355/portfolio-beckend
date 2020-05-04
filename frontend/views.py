@@ -11,7 +11,7 @@ from datetime import datetime
 def index(request):
     # x = datetime(2018, 9, 15)
     # print(x.strftime("%b %d %Y %H:%M:%S"))
-    return HttpResponse("Porfolio api service")
+    return HttpResponse("Porfolio api service 1.0.0")
 
 
 class CustomAuthToken(ObtainAuthToken):
