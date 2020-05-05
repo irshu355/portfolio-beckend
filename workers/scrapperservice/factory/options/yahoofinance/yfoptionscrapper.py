@@ -105,7 +105,7 @@ class YFOptionScrapperService:
             obj["last_price"] = self.getSanitizedDecimal(
                 contractObj["lastPrice"]["raw"])
 
-        expires = datetime.fromtimestamp(timestamp)
+        expires = datetime.fromtimestamp(timestamp).date()
         obj["expires"] = expires
 
         return obj

@@ -20,7 +20,7 @@ def scrap_ticker(request):
     html = "<html><body>It is now %s.</body></html>" % now
     # return HttpResponse(html)
 
-    scrapTicker('TWTR')
+    scrapTicker(request.GET['symbol'])
 
     # scrapTickers.delay()
     return HttpResponse(html)
