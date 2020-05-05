@@ -143,7 +143,7 @@ class Option(models.Model):
         max_digits=20, decimal_places=10, default=Decimal('0.00'))
     last_price = models.DecimalField(
         max_digits=20, decimal_places=10, blank=True, null=True, default=Decimal('0.00'))
-    expires = models.DateTimeField(null=False, blank=False)
+    expires = models.DateField(null=False, blank=False)
     created = models.DateTimeField(default=now, editable=False)
     updated = models.DateTimeField(auto_now=True)
 

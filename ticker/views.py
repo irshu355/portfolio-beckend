@@ -97,7 +97,7 @@ def getOptionsByTicker(request):
 
 @api_view(['GET'])
 def getOptionsByExpiry(request):
-    ticker = request.GET['ticker']
+    ticker = request.GET['symbol']
     expires = request.GET['expires']
     querySet = Option.objects.filter(
         ticker__symbol=ticker).filter(expires=expires)
