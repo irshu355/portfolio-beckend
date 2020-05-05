@@ -113,7 +113,7 @@ class NasdaqScrapperService:
         data["exchange"] = exchange
 
         data["y1target"] = float(
-            ''.join(e for e in y1Target if e.isdigit() or e == '.'))
+            ''.join(e for e in y1Target if e.isdigit() or e == '.')) if self.hasNumbers(y1Target) else 0.00
         data["ninety_day_avg_volume"] = int(
             ''.join(e for e in ninetyDayVolume if e.isdigit() or e == '.'))
         data["forwardpe_one_year"] = float(

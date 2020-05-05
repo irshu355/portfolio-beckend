@@ -66,7 +66,7 @@ class YFOptionScrapperService:
                 obj = self.getOptionObj(p, exp, ticker)
                 obj["contract_type"] = "P"
                 obj["contract_name"] = self.buildContractName(
-                    "P", c, exp, ticker)
+                    "P", p, exp, ticker)
                 contracts.append(obj)
         return contracts
 

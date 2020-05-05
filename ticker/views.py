@@ -19,6 +19,8 @@ from rest_framework.authtoken.models import Token
 from workers.scrapperservice.dalmanager import DALManager
 from workers.scrapperservice import main
 from django.http import QueryDict, JsonResponse
+from django.db.models import Q
+from dateutil import parser
 
 
 @api_view(['POST'])
@@ -99,8 +101,12 @@ def getOptionsByTicker(request):
 def getOptionsByExpiry(request):
     ticker = request.GET['symbol']
     expires = request.GET['expires']
+
+    date_string = expires + ' 00:00:00'
+    date_object = parser.parse(date_string)
+
     querySet = Option.objects.filter(
-        ticker__symbol=ticker).filter(expires=expires)
+        Q(ticker__symbol=ticker) & Q(expires=date_object.date()))
 
     serializer = OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
