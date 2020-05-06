@@ -95,6 +95,9 @@ class YFOptionScrapperService:
         if 'volume' in contractObj:
             obj["volume"] = contractObj["volume"]["raw"]
 
+        if 'openInterest' in contractObj:
+            obj["open_interest"] = contractObj["openInterest"]["raw"]
+
         if 'ask' in contractObj:
             obj["ask"] = self.getSanitizedDecimal(contractObj["ask"]["raw"])
 
@@ -106,6 +109,11 @@ class YFOptionScrapperService:
                 contractObj["lastPrice"]["raw"])
 
         expires = datetime.fromtimestamp(timestamp).date()
+
+        if 'lastTradeDate' in contractObj:
+            obj["last_trade_date"] = datetime.fromtimestamp(
+                contractObj["lastTradeDate"]["raw"])
+
         obj["expires"] = expires
 
         return obj
