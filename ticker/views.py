@@ -21,14 +21,19 @@ from workers.scrapperservice import main
 from django.http import QueryDict, JsonResponse
 from django.db.models import Q
 from dateutil import parser
+from django.contrib.auth.decorators import login_required
 
 
 @api_view(['POST'])
+@login_required
 def toggleWatchlist(request):
+
+    user = request.headers['authorization']
+
     symbol = QueryDict(request.body)['ticker']
-    token = request.headers['authorization'].split('Bearer ')[1]
-    user = Token.objects.get(key=token).user
-    profile = UserProfile.objects.get(user__email=user.email)
+    # token = request.headers['authorization'].split('Token ')[1]
+    # user = Token.objects.get(key=token).user
+    profile = UserProfile.objects.get(user__email=request.user.email)
     ticker = Ticker.objects.filter(symbol=symbol).first()
     watchItem = WatchList.objects.filter(
         ticker__symbol=symbol).filter(owner=profile).first()
