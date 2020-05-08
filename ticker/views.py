@@ -69,8 +69,7 @@ def getWatchListByUserId(request):
 def getSymbols(request):
     symbol = request.GET['symbol']
 
-    token = request.headers['authorization'].split('Bearer ')[1]
-    user = Token.objects.get(key=token).user
+    user = request.headers['authorization']
 
     watchList = WatchList.objects.filter(owner__user=user)
 
