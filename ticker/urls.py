@@ -18,6 +18,7 @@ urlpatterns = [
     path(r'options_with_vol_by_ticker', getOptionsWithVolByTicker),
     path(r'toggle_watchlist', toggleWatchlist),
     path(r'symbols', getSymbols),
+    path(r'ticker/<str:symbol>', getTicker)
 
 ]
 

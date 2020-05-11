@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
-from workers.tasks import scrapTicker, add, scrapTickers, scrapWatchOptions, scrapWatchListTickers, scrapOption, scrapSymbolsNasdaq, scrapSymbolsNYSE
+from workers.tasks import *
 from ticker.models import Ticker
 
 # Create your tasks here
@@ -12,6 +12,8 @@ from django.http import Http404, QueryDict, JsonResponse
 from rest_framework import status
 from ticker.serializers import TickerSerializer
 from rest_framework.views import APIView, Response
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 def scrap_ticker(request):
@@ -21,6 +23,15 @@ def scrap_ticker(request):
     # return HttpResponse(html)
 
     scrapTicker(request.GET['symbol'])
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'BA',
+        {
+            'type': 'quote_message',
+            'message': "event_trigered_from_views"
+        }
+    )
 
     # scrapTickers.delay()
     return HttpResponse(html)

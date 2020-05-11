@@ -3,6 +3,9 @@ from workers.scrapperservice.dalmanager import DALManager
 import pandas as pd
 import os
 from django.conf import settings
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import json
 
 
 def _scrapSymbols(nasdaqListed):
@@ -59,13 +62,26 @@ def _scrapWatchListTickers():
     tickerInstance = scrapper.getScrapper()
     for watch in list:
         data = tickerInstance().scrapTicker(watch.ticker.symbol)
+        notifyChannels(data)
         dal.postTicker(data)
     return "ok"
 
 
+def notifyChannels(ticker):
+    message = json.dumps(ticker)
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        ticker["symbol"],
+        {
+            'type': 'quote_message',
+            'message': message
+        }
+    )
+
 #
 # stock options
 #
+
 
 def _scrapWatchOptions():
     x = Scrapper()

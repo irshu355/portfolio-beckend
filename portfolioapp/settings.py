@@ -41,10 +41,11 @@ INSTALLED_APPS = [
     'workers.apps.WorkersConfig',
     'frontend.apps.FrontendConfig',
     'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
     'django_celery_results',
     'django_celery_beat',
-    'djoser',
-    'rest_framework.authtoken',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -58,12 +59,26 @@ MIDDLEWARE = [
 
 ]
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
+
 ROOT_URLCONF = 'portfolioapp.urls'
+
+PROJECT_APP_PATH = os.path.dirname(os.path.abspath(__file__))
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(PROJECT_APP_PATH, 'frontend', 'templates'),
+            os.path.join(PROJECT_APP_PATH, 'templates')
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,7 +92,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'portfolioapp.wsgi.application'
-
+ASGI_APPLICATION = 'portfolioapp.routing.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

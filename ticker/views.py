@@ -145,6 +145,11 @@ def getOptionsWithVolByTicker(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(['GET'])
+def getTicker(request, symbol):
+    print(symbol)
+
+
 class TickerApi(APIView):
 
     def get_object(self, symbol):
