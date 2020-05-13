@@ -28,7 +28,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def toggleWatchlist(request):
 
-    user = request.headers['authorization']
+    user = request.user
 
     symbol = QueryDict(request.body)['ticker']
     # token = request.headers['authorization'].split('Token ')[1]
@@ -69,7 +69,7 @@ def getWatchListByUserId(request):
 def getSymbols(request):
     symbol = request.GET['symbol']
 
-    user = request.headers['authorization']
+    user = request.user
 
     watchList = WatchList.objects.filter(owner__user=user)
 
