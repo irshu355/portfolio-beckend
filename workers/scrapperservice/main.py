@@ -103,13 +103,12 @@ def _scrapOption(ticker):
 ##########################################################################################################
 
 def notifyChannels(ticker):
-    message = json.dumps(ticker)
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         ticker["symbol"],
         {
             'type': 'quote_message',
-            'message': message
+            'message': ticker
         }
     )
 
