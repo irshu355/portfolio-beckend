@@ -123,7 +123,7 @@ def streamTestTickerQuotes():
     arr = []
     for x in list:
         obj = {
-            "price": 10.00,
+            "price": 120.00,
             "volume": x.ticker.volume,
             "symbol": x.ticker.symbol,
             "id": x.ticker.id
