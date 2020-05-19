@@ -7,7 +7,7 @@ from ticker.models import Ticker
 
 # Create your tasks here
 from celery import shared_task
-from workers.scrapperservice.main import _scrap
+from workers.scrapperservice.main import _scrap, streamTestTickerQuotes
 from django.http import Http404, QueryDict, JsonResponse
 from rest_framework import status
 from ticker.serializers import TickerSerializer
@@ -78,3 +78,10 @@ def scrap_symbols(request):
         scrapSymbolsNYSE()
 
     return HttpResponse("html")
+
+
+# for running tests
+
+def test_quote_sockets(request):
+    list = streamTestTickerQuotes()
+    return JsonResponse(list, safe=False)

@@ -6,6 +6,12 @@ from django.conf import settings
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
+from decimal import Decimal
+
+
+##########################################################################################################
+# Tickers scrapping
+##########################################################################################################
 
 
 def _scrapSymbols(nasdaqListed):
@@ -67,20 +73,9 @@ def _scrapWatchListTickers():
     return "ok"
 
 
-def notifyChannels(ticker):
-    message = json.dumps(ticker)
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        ticker["symbol"],
-        {
-            'type': 'quote_message',
-            'message': message
-        }
-    )
-
-#
-# stock options
-#
+##########################################################################################################
+    #Options scrapping#
+##########################################################################################################
 
 
 def _scrapWatchOptions():
@@ -101,3 +96,40 @@ def _scrapOption(ticker):
     contracts = optionInstance().scrapOption(ticker)
     dal.postOptions(contracts)
     return "ok"
+
+
+##########################################################################################################
+    #Websocket#
+##########################################################################################################
+
+def notifyChannels(ticker):
+    message = json.dumps(ticker)
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        ticker["symbol"],
+        {
+            'type': 'quote_message',
+            'message': message
+        }
+    )
+
+
+##########################################################################################################
+    #Tests#
+##########################################################################################################
+
+def streamTestTickerQuotes():
+    dal = DALManager()
+    list = dal.getWatchList()
+    arr = []
+    for x in list:
+        obj = {
+            "price": float(x.ticker.price) + 12.0,
+            "volume": x.ticker.volume,
+            "symbol": x.ticker.symbol,
+            "id": x.ticker.id
+        }
+        arr.append(obj)
+        notifyChannels(obj)
+
+    return arr

@@ -8,7 +8,9 @@ from workers.scrapperservice.main import _scrapSymbols, _scrap, _scrapAll, _scra
 def add(a, b):
     return a + b
 
-# STOCK QUOTE
+##########################################################################################################
+# Stock ticker quote tasks
+##########################################################################################################
 
 
 @shared_task
@@ -25,7 +27,10 @@ def scrapTickers():
 def scrapWatchListTickers():
     return _scrapWatchListTickers()
 
-# OPTIONS
+
+##########################################################################################################
+# Options tasks
+##########################################################################################################
 
 
 @shared_task
