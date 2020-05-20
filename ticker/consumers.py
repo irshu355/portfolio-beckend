@@ -43,16 +43,16 @@ class QuoteConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
 
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'quote_message',
-                'message': message
-            }
-        )
+        # # Send message to room group
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.room_group_name,
+        #     {
+        #         'type': 'quote_message',
+        #         'message': message
+        #     }
+        # )
 
-    # Receive message from room group
+    # transmit quotes refresh
     def quote_message(self, event):
         message = event['message']
 
@@ -60,4 +60,15 @@ class QuoteConsumer(WebsocketConsumer):
         self.send(text_data=json.dumps({
             'type': 'stock-quote',
             'ticker': message
+        }))
+
+    # transmit options refresh
+
+    def options_refresh_message(self, event):
+        message = event['message']
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'type': 'options-refresh',
+            'options_refresh': message
         }))

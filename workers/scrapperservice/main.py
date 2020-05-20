@@ -68,7 +68,7 @@ def _scrapWatchListTickers():
     tickerInstance = scrapper.getScrapper()
     for watch in list:
         data = tickerInstance().scrapTicker(watch.ticker.symbol)
-        notifyChannels(data)
+        transmitQuoteMessage(data)
         dal.postTicker(data)
     return "ok"
 
@@ -86,6 +86,10 @@ def _scrapWatchOptions():
     for watch in list:
         contracts = optionInstance().scrapOption(watch.ticker.symbol)
         dal.postOptions(contracts)
+        obj = {
+            "symbol": watch.ticker.symbol
+        }
+        transmitOptionsRefreshMessage(obj)
     return "ok"
 
 
@@ -102,13 +106,24 @@ def _scrapOption(ticker):
     #Websocket#
 ##########################################################################################################
 
-def notifyChannels(ticker):
+def transmitQuoteMessage(ticker):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         ticker["symbol"],
         {
             'type': 'quote_message',
             'message': ticker
+        }
+    )
+
+
+def transmitOptionsRefreshMessage(data):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        data["symbol"],
+        {
+            'type': 'options_refresh_message',
+            'message': data
         }
     )
 
@@ -129,6 +144,6 @@ def streamTestTickerQuotes():
             "id": x.ticker.id
         }
         arr.append(obj)
-        notifyChannels(obj)
+        transmitQuoteMessage(obj)
 
     return arr
