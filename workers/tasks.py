@@ -1,7 +1,7 @@
 # Create your tasks here
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
-from workers.scrapperservice.main import _scrapSymbols, _scrap, _scrapAll, _scrapWatchListTickers, _scrapWatchOptions, _scrapOption
+import workers.scrapperservice.main
 
 
 @shared_task
@@ -15,17 +15,17 @@ def add(a, b):
 
 @shared_task
 def scrapTicker(ticker):
-    return _scrap(ticker)
+    return workers.scrapperservice.main._scrap(ticker)
 
 
 @shared_task
 def scrapTickers():
-    return _scrapAll()
+    return workers.scrapperservice.main._scrapAll()
 
 
 @shared_task
 def scrapWatchListTickers():
-    return _scrapWatchListTickers()
+    return workers.scrapperservice.main._scrapWatchListTickers()
 
 
 ##########################################################################################################
@@ -35,19 +35,19 @@ def scrapWatchListTickers():
 
 @shared_task
 def scrapWatchOptions():
-    return _scrapWatchOptions()
+    return workers.scrapperservice.main._scrapWatchOptions()
 
 
 @shared_task
 def scrapOption(ticker):
-    return _scrapOption(ticker)
+    return workers.scrapperservice.main._scrapOption(ticker)
 
 
 @shared_task
 def scrapSymbolsNasdaq():
-    return _scrapSymbols(True)
+    return workers.scrapperservice.main._scrapSymbols(True)
 
 
 @shared_task
 def scrapSymbolsNYSE():
-    return _scrapSymbols(False)
+    return workers.scrapperservice.main._scrapSymbols(False)

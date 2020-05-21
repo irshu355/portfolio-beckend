@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
-from workers.tasks import *
+import workers.tasks
 from ticker.models import Ticker
 
 # Create your tasks here
@@ -44,7 +44,7 @@ def scrap_watchlist_tickers(request):
     html = "<html><body>It is now %s.</body></html>" % now
     # return HttpResponse(html)
 
-    scrapWatchListTickers()
+    workers.tasks.scrapWatchListTickers()
     return HttpResponse(html)
 
 
@@ -54,28 +54,28 @@ def scrap_quote(request):
     html = "<html><body>It is now %s.</body></html>" % now
     # return HttpResponse(html)
 
-    scrapTickers()
+    workers.tasks.scrapTickers()
 
     # scrapTickers.delay()
     return HttpResponse(html)
 
 
 def scrap_option(request):
-    scrapOption(request.GET['symbol'])
+    workers.tasks.scrapOption(request.GET['symbol'])
     return JsonResponse({'status': 200})
 
 
 def scrap_watchlist_options(request):
-    scrapWatchOptions()
+    workers.tasks.scrapWatchOptions()
     return HttpResponse("html")
 
 
 def scrap_symbols(request):
     type = request.GET['type']
     if (type == 'nasdaq'):
-        scrapSymbolsNasdaq()
+        workers.tasks.scrapSymbolsNasdaq()
     else:
-        scrapSymbolsNYSE()
+        workers.tasks.scrapSymbolsNYSE()
 
     return HttpResponse("html")
 

@@ -7,8 +7,8 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
 from decimal import Decimal
-
-
+import random
+import time
 ##########################################################################################################
 # Tickers scrapping
 ##########################################################################################################
@@ -67,15 +67,22 @@ def _scrapWatchListTickers():
     list = dal.getWatchList()
     tickerInstance = scrapper.getScrapper()
     for watch in list:
-        data = tickerInstance().scrapTicker(watch.ticker.symbol)
+        #data = tickerInstance().scrapTicker(watch.ticker.symbol)
+        # obj = {
+        #     "price": data["price"],
+        #     "volume": data["volume"],
+        #     "symbol": watch.ticker.symbol,
+        #     "id": watch.ticker.id
+        # }
         obj = {
-            "price": data["price"],
-            "volume": data["volume"],
+            "price": float(Decimal(random.randrange(155, 389))),
+            "volume": random.randint(155, 389),
             "symbol": watch.ticker.symbol,
             "id": watch.ticker.id
         }
         transmitQuoteMessage(obj)
-        dal.postTicker(data)
+        time.sleep(1)
+        # dal.postTicker(data)
     return "ok"
 
 
