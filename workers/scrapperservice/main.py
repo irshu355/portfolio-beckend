@@ -68,7 +68,13 @@ def _scrapWatchListTickers():
     tickerInstance = scrapper.getScrapper()
     for watch in list:
         data = tickerInstance().scrapTicker(watch.ticker.symbol)
-        transmitQuoteMessage(data)
+        obj = {
+            "price": data["price"],
+            "volume": data["volume"],
+            "symbol": watch.ticker.symbol,
+            "id": watch.ticker.id
+        }
+        transmitQuoteMessage(obj)
         dal.postTicker(data)
     return "ok"
 
