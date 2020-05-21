@@ -67,7 +67,8 @@ class DALManager:
         return Ticker.objects.all()
 
     def getWatchList(self):
-        return WatchList.objects.all()
+        return WatchList.objects.all().distinct('ticker')
+        #x=WatchList.objects.filter(owner__tier=1) .distinct('ticker').values_list('ticker__symbol',flat=True)
 
     # options
 

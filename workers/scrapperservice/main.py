@@ -90,7 +90,6 @@ def _scrapWatchOptions():
             "symbol": watch.ticker.symbol
         }
         transmitOptionsRefreshMessage(obj)
-        break
     return "ok"
 
 
