@@ -14,7 +14,7 @@ def add(a, b):
 def toggleMarketScrappers(enabled):
     periodic_task = PeriodicTask.objects.get(
         name='quote scrapper every 5 seconds')
-    periodic_task.enabled = enabled
+    periodic_task.enabled = True if enabled == 'y' else False
     periodic_task.save()
 
 
