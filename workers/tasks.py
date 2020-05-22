@@ -2,11 +2,21 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task
 import workers.scrapperservice.main
+from django_celery_beat.models import PeriodicTask, IntervalSchedule, CrontabSchedule
 
 
 @shared_task
 def add(a, b):
     return a + b
+
+
+@shared_task
+def toggleMarketScrappers(enabled):
+    periodic_task = PeriodicTask.objects.get(
+        name='quote scrapper every 5 seconds')
+    periodic_task.enabled = enabled
+    periodic_task.save()
+
 
 ##########################################################################################################
 # Stock ticker quote tasks
