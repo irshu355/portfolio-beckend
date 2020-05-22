@@ -81,7 +81,7 @@ def _scrapWatchListTickers():
             "id": watch.ticker.id
         }
         transmitQuoteMessage(obj)
-        time.sleep(1)
+        time.sleep(0.200)
         # dal.postTicker(data)
     return "ok"
 
