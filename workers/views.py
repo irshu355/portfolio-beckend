@@ -22,7 +22,7 @@ def scrap_ticker(request):
     html = "<html><body>It is now %s.</body></html>" % now
     # return HttpResponse(html)
 
-    scrapTicker(request.GET['symbol'])
+    workers.tasks.scrapTicker(request.GET['symbol'])
 
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
