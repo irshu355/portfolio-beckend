@@ -3,13 +3,14 @@ from enum import Enum
 
 
 class TickerScrapperSource(Enum):
-    NASDAQ = "NASDAQ"
-    CNBC = "CNBC"
+    NASDAQ = "NASDAQ_QUOTES"
+    CNBC = "CNBC_QUOTES"
+    YF = "YF_QUOTES"
 
 
 class OptionsScrapperSource(Enum):
-    Zachs = "Zachs"
-    YF = "YF"
+    Zachs = "ZACHS_OPTIONS"
+    YF = "YF_OPTIONS"
 
 
 class UpdateError:

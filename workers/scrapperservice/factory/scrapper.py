@@ -3,6 +3,7 @@ from workers.scrapperservice.factory.stockquote.nasdaq import nasdaqscrapper
 from workers.scrapperservice.factory.stockquote.cnbc import cnbcscrapper
 from workers.scrapperservice.factory.options.yahoofinance import yfoptionscrapper
 from workers.models import TickerScrapperSource, OptionsScrapperSource
+from ticker.models import Health
 
 
 class Scrapper:
@@ -18,14 +19,24 @@ class Scrapper:
 
         self.factory = ScrapperObjectFactory()
         # stock quote
-        self.factory.register_builder(
-            TickerScrapperSource.NASDAQ.name, nasdaqscrapper.NasdaqScrapperServiceBuilder())
+
+        list = Health.objects.all()
+        healths = []
+        for rec in list:
+            if rec.status == 200:
+                continue
+            healths.append(rec.name)
+
+        if not TickerScrapperSource.NASDAQ.value in healths:
+            self.factory.register_builder(
+                TickerScrapperSource.NASDAQ.value, nasdaqscrapper.NasdaqScrapperServiceBuilder())
         # self.factory.register_builder(
         #     "CNBC", cnbcscrapper.CNBCScrapperServiceBuilder())
 
         # options
-        self.factory.register_options_builder(
-            OptionsScrapperSource.YF.value, yfoptionscrapper.YFOptionScrapperServiceBuilder())
+        if not OptionsScrapperSource.YF.value in healths:
+            self.factory.register_options_builder(
+                OptionsScrapperSource.YF.value, yfoptionscrapper.YFOptionScrapperServiceBuilder())
 
     def getScrapper(self):
         return self.factory.create(TickerScrapperSource.NASDAQ.value, **self.config)

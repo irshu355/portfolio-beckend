@@ -12,6 +12,22 @@ from ticker.utils.utils import UserTier
 from decimal import Decimal
 
 
+class Health(models.Model):
+    name = models.CharField(
+        unique=True, max_length=30, blank=True, null=True)
+    status = models.IntegerField(blank=True, null=True)
+    reason = models.CharField(
+        unique=False, max_length=500, blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name + "("+str(self.status)+") ->" + self.reason
+
+    class Meta:
+        managed = True
+        db_table = 'health'
+
+
 class Symbol(models.Model):
     symbol = models.CharField(
         unique=True, max_length=30, blank=True, null=True)
