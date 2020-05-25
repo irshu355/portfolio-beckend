@@ -88,6 +88,7 @@ class NasdaqScrapperService:
         exDividentDate = summaryJson["data"]["summaryData"]["ExDividendDate"]["value"]
 
         data = {}
+        data["source"] = self.name
         data["symbol"] = symbol
         data["name"] = name
         data["price"] = float(

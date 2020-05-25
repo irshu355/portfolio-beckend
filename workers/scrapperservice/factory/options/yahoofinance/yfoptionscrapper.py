@@ -32,8 +32,8 @@ class YFOptionScrapperService:
         requestResponse = requests.get(url, verify=False)
         jsonRes = json.loads(requestResponse.text)
         expirations = self.parseExpirations(jsonRes)
-        contracts = self.scraptContracts(ticker, expirations)
-        return contracts
+        contracts, status, reason = self.scraptContracts(ticker, expirations)
+        return contracts, status, reason
 
     def scraptContracts(self, ticker, expirations):
         contracts = []
@@ -41,6 +41,10 @@ class YFOptionScrapperService:
             url = 'https://query2.finance.yahoo.com/v7/finance/options/{0}?formatted=true&lang=en-US&region=US&date={1}&corsDomain=finance.yahoo.com'.format(
                 ticker, exp)
             requestResponse = requests.get(url, verify=False)
+
+            if (requestResponse.status_code != 200):
+                return [], requestResponse.status_code, requestResponse.reason
+
             jsonRes = json.loads(requestResponse.text)
 
             if 'finance' in jsonRes:
@@ -68,7 +72,7 @@ class YFOptionScrapperService:
                 obj["contract_name"] = self.buildContractName(
                     "P", p, exp, ticker)
                 contracts.append(obj)
-        return contracts
+        return contracts, 200, ""
 
     def buildContractName(self, type, contractObj, timestamp, symbol):
         expires = datetime.fromtimestamp(timestamp)

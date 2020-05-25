@@ -44,7 +44,7 @@ def _scrapSymbols(nasdaqListed):
 def _scrap(ticker):
     x = Scrapper()
     dal = DALManager()
-    tickerInstance = x.getScrapper()
+    tickerInstance, name = x.getScrapper()
     data = tickerInstance().scrapTicker(ticker)
     result = dal.postTicker(data)
     return result
@@ -54,7 +54,7 @@ def _scrapAll():
     scrapper = Scrapper()
     dal = DALManager()
     list = dal.getTickers()
-    tickerInstance = scrapper.getScrapper()
+    tickerInstance, name = scrapper.getScrapper()
     for t in list:
         data = tickerInstance().scrapTicker(t)
         dal.postTicker(data)
@@ -65,9 +65,9 @@ def _scrapWatchListTickers():
     scrapper = Scrapper()
     dal = DALManager()
     list = dal.getWatchList()
-    tickerInstance = scrapper.getScrapper()
     for watch in list:
-        #data = tickerInstance().scrapTicker(watch.ticker.symbol)
+        tickerInstance, name = scrapper.getScrapper()
+        data = tickerInstance().scrapTicker(watch.ticker.symbol)
         # obj = {
         #     "price": data["price"],
         #     "volume": data["volume"],
@@ -82,7 +82,7 @@ def _scrapWatchListTickers():
         }
         transmitQuoteMessage(obj)
         time.sleep(0.200)
-        # dal.postTicker(data)
+        dal.postTicker(data)
     return "ok"
 
 
@@ -94,24 +94,30 @@ def _scrapWatchListTickers():
 def _scrapWatchOptions():
     x = Scrapper()
     dal = DALManager()
-    optionInstance = x.getScrapperOption()
     list = dal.getWatchList()
     for watch in list:
-        contracts = optionInstance().scrapOption(watch.ticker.symbol)
-        dal.postOptions(contracts)
-        obj = {
-            "symbol": watch.ticker.symbol
-        }
-        transmitOptionsRefreshMessage(obj)
+        optionInstance, name = x.getScrapperOption()
+        contracts, status, reason = optionInstance().scrapOption(watch.ticker.symbol)
+        if status == 200:
+            dal.postOptions(contracts)
+            obj = {
+                "symbol": watch.ticker.symbol
+            }
+            transmitOptionsRefreshMessage(obj)
+        else:
+            dal.reportFaultySource(name, status, reason)
     return "ok"
 
 
 def _scrapOption(ticker):
     x = Scrapper()
     dal = DALManager()
-    optionInstance = x.getScrapperOption()
-    contracts = optionInstance().scrapOption(ticker)
-    dal.postOptions(contracts)
+    optionInstance, name = x.getScrapperOption()
+    contracts, status, reason = optionInstance().scrapOption(ticker)
+    if(status == 200):
+        dal.postOptions(contracts)
+    else:
+        dal.reportFaultySource(name, status, reason)
     return "ok"
 
 

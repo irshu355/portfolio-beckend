@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 import requests
 from ticker.serializers import TickerSerializer, OptionsSerializer, SymbolsSerializer
-from ticker.models import Ticker, Option, WatchList, Symbol
+from ticker.models import Ticker, Option, WatchList, Symbol, Health
 from rest_framework.views import APIView, Response
 from django.http import Http404
 from rest_framework import generics
@@ -13,6 +13,9 @@ import pandas
 class DALManager:
     def __init__(self):
         pass
+
+    def reportFaultySource(self, _name, _status, _reason):
+        Health.objects.create(name=_name, status=_status, reason=_reason)
 
     def postSymbols(self, data):
         for rec in data:

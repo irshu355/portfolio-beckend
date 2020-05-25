@@ -19,7 +19,9 @@ class ScrapperObjectFactory:
         self._builders_options.append(ScrapperObj(key, builder))
 
     def create(self, key, **kwargs):
-        return random.choice(self._builders).obj
+        choice = random.choice(self._builders)
+        return choice.obj, choice.name
 
     def createOption(self, key, **kwargs):
-        return random.choice(self._builders_options).obj
+        choice = random.choice(self._builders_options)
+        return choice.obj, choice.name

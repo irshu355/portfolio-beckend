@@ -94,6 +94,8 @@ class Ticker(models.Model):
     exchange = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(default=now, editable=False)
     updated = models.DateTimeField(auto_now=True)
+    source = models.CharField(
+        unique=False, max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.symbol
