@@ -109,6 +109,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     tier = models.IntegerField(
         choices=UserTier.choices(), default=UserTier.NORMAL)
+    is_online = models.IntegerField(default=0)
 
     def get_user_tier(self):
         return UserTier(self.tier).name.title()

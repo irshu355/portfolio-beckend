@@ -3,6 +3,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from ticker.models import Ticker, WatchList, Option, Symbol, UserProfile
 from rest_framework.authtoken.models import Token
+from django.http import Http404
 
 
 class QuoteConsumer(WebsocketConsumer):
@@ -10,12 +11,13 @@ class QuoteConsumer(WebsocketConsumer):
         self.token = self.scope['url_route']['kwargs']['username']
         user = Token.objects.get(key=self.token).user
         watchList = WatchList.objects.filter(owner__user=user)
-        self.room_group_name = "BA"
         for rec in watchList:
             async_to_sync(self.channel_layer.group_add)(
                 rec.ticker.symbol,
                 self.channel_name
             )
+
+        self.markUserOnline(user, 1)
 
         # self.room_group_name = 'chat_%s' % self.room_name
 
@@ -34,9 +36,11 @@ class QuoteConsumer(WebsocketConsumer):
         watchList = WatchList.objects.filter(owner__user=user)
         for rec in watchList:
             async_to_sync(self.channel_layer.group_discard)(
-                self.room_group_name,
+                rec.ticker.symbol,
                 self.channel_name
             )
+
+        self.markUserOnline(user, 0)
 
     # Receive message from WebSocket
     def receive(self, text_data):
@@ -72,3 +76,11 @@ class QuoteConsumer(WebsocketConsumer):
             'type': 'options-refresh',
             'options_refresh': message
         }))
+
+    def markUserOnline(self, user, status):
+        try:
+            profile = UserProfile.objects.get(user=user.id)
+            profile.is_online = status
+            profile.save()
+        except UserProfile.DoesNotExist:
+            return Http404
