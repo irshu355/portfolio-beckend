@@ -194,9 +194,9 @@ class QuoteWareHouse(models.Model):
     close = models.DecimalField(
         max_digits=20, decimal_places=10, blank=False, null=False)
     symbol = models.CharField(
-        unique=True, max_length=30, blank=False, null=False)
+        unique=False, max_length=30, blank=False, null=False)
     volume = models.IntegerField(blank=False, null=False)
-    timeStamp = models.DateTimeField()
+    timestamp = models.DateTimeField()
 
     class Meta:
         managed = True

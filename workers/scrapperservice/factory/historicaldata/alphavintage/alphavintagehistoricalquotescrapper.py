@@ -46,7 +46,7 @@ class AlphaVintageHistoricalQuoteScrapperService:
         return self.parseTimeSeries(jsonRes, symbol, interval), 200, ""
 
     def parseTimeSeries(self, jsonRes, symbol, interval):
-        seriesObj = jsonRes["Time Series (1min)"]
+        seriesObj = jsonRes["Time Series (1min)"] if interval == 1 else jsonRes["Time Series (Daily)"]
         series = []
         for time in seriesObj.keys():
 

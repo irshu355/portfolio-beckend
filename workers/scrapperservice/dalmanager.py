@@ -117,7 +117,7 @@ class DALManager:
             exists = self.get_historical_object(
                 rec["ticker"], rec["timestamp"])
 
-            if (exists == QuoteWareHouse.DoesNotExist):
+            if (exists == Http404):
                 forInsert.append(QuoteWareHouse(
                     ticker=ticker, open=rec["open"], close=rec["close"], high=rec["high"], low=rec["low"],
                     timestamp=rec["timestamp"], volume=rec["volume"], symbol=rec["symbol"]))

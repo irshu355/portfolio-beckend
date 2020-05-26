@@ -15,6 +15,7 @@ class OptionsScrapperSource(Enum):
 
 class HistoricalQuoteScrapperSource(Enum):
     AlphaVintage = "ALPHA_VINTAGE"
+    CNBC = "CNBC"
 
 
 class UpdateError:
