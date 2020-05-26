@@ -13,6 +13,10 @@ class OptionsScrapperSource(Enum):
     YF = "YF_OPTIONS"
 
 
+class HistoricalQuoteScrapperSource(Enum):
+    AlphaVintage = "ALPHA_VINTAGE"
+
+
 class UpdateError:
 
     def __Init__(self, error):

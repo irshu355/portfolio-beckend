@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 import requests
 from ticker.serializers import TickerSerializer, OptionsSerializer, SymbolsSerializer
-from ticker.models import Ticker, Option, WatchList, Symbol, Health
+from ticker.models import Ticker, Option, WatchList, Symbol, Health, QuoteWareHouse
 from rest_framework.views import APIView, Response
 from django.http import Http404
 from rest_framework import generics
@@ -31,12 +31,19 @@ class DALManager:
                 return UpdateError("failed to insert/update symbol")
 
     def postOptions(self, data):
-
+        symbol = ''
+        tickerId = 0
         for contract in data:
             single = self.get_option_object(
                 contract["contract_name"], contract["contract_name"])
-            ticker = self.get_ticker_object(contract["symbol"])
-            contract["ticker"] = ticker.id
+
+            if symbol != contract["symbol"]:
+                ticker = self.get_ticker_object(contract["symbol"])
+                symbol = contract["symbol"]
+                tickerId = ticker.id
+                contract["ticker"] = ticker.id
+            else:
+                contract["ticker"] = tickerId
             if single == Http404:
                 serializer = OptionsSerializer(data=contract)
             else:
@@ -70,7 +77,7 @@ class DALManager:
         return Ticker.objects.all()
 
     def getWatchList(self):
-        list = WatchList.objects.all().distinct('ticker')
+        list = WatchList.objects.filter(owner__is_online=1).distinct('ticker')
         arr = []
         for rec in list:
             arr.append(rec)
@@ -90,4 +97,35 @@ class DALManager:
         try:
             return Symbol.objects.get(symbol=symbol)
         except Symbol.DoesNotExist:
+            return Http404
+
+    # historical data
+
+    def postQuoteHistorical(self, history):
+        symbol = ''
+        tickerId = 0
+        forInsert = []
+        for rec in history:
+            if symbol != rec["symbol"]:
+                ticker = self.get_ticker_object(rec["symbol"])
+                symbol = rec["symbol"]
+                tickerId = ticker.id
+                rec["ticker"] = ticker.id
+            else:
+                rec["ticker"] = tickerId
+
+            exists = self.get_historical_object(
+                rec["ticker"], rec["timestamp"])
+
+            if (exists == QuoteWareHouse.DoesNotExist):
+                forInsert.append(QuoteWareHouse(
+                    ticker=ticker, open=rec["open"], close=rec["close"], high=rec["high"], low=rec["low"],
+                    timestamp=rec["timestamp"], volume=rec["volume"], symbol=rec["symbol"]))
+
+        QuoteWareHouse.objects.bulk_create(forInsert)
+
+    def get_historical_object(self, ticker, timestamp):
+        try:
+            return QuoteWareHouse.objects.get(ticker=ticker, timestamp=timestamp)
+        except QuoteWareHouse.DoesNotExist:
             return Http404

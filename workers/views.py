@@ -77,7 +77,12 @@ def scrap_symbols(request):
     else:
         workers.tasks.scrapSymbolsNYSE()
 
-    return HttpResponse("html")
+    return HttpResponse("OK")
+
+
+def scrap_historical_quotes(request):
+    workers.tasks.scrapHistoricalQuotes(request.GET['symbol'], 1)
+    return HttpResponse("OK")
 
 
 # for running tests

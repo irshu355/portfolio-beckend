@@ -122,6 +122,20 @@ def _scrapOption(ticker):
 
 
 ##########################################################################################################
+    #historical data scrapping#
+##########################################################################################################
+
+
+def _scrapHistoricalQuotes(ticker, interval):
+    scrapper = Scrapper()
+    dal = DALManager()
+    Instance, name = scrapper.getScrapperHistoricalQuotes()
+    history, status, reason = Instance().scrap(ticker, interval)
+    dal.postQuoteHistorical(history)
+    return "added historical"+ticker + " with interval " + str(interval)
+
+
+##########################################################################################################
     #Websocket#
 ##########################################################################################################
 

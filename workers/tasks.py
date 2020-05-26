@@ -61,3 +61,13 @@ def scrapSymbolsNasdaq():
 @shared_task
 def scrapSymbolsNYSE():
     return workers.scrapperservice.main._scrapSymbols(False)
+
+
+##########################################################################################################
+# Historical tasks
+##########################################################################################################
+
+
+@shared_task
+def scrapHistoricalQuotes(symbol, interval):
+    return workers.scrapperservice.main._scrapHistoricalQuotes(symbol, interval)

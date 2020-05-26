@@ -173,3 +173,5 @@ CACHES = {
         'LOCATION': 'my_cache_table',
     }
 }
+
+ALPHA_VINTAGE_KEY = 'MSCH79QTH2GCP5RL'

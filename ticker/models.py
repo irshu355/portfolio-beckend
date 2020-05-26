@@ -181,3 +181,23 @@ class Option(models.Model):
     class Meta:
         managed = True
         db_table = 'options'
+
+
+class QuoteWareHouse(models.Model):
+    ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE)
+    open = models.DecimalField(
+        max_digits=20, decimal_places=10, blank=False, null=False)
+    high = models.DecimalField(
+        max_digits=20, decimal_places=10, blank=False, null=False)
+    low = models.DecimalField(
+        max_digits=20, decimal_places=10, blank=False, null=False)
+    close = models.DecimalField(
+        max_digits=20, decimal_places=10, blank=False, null=False)
+    symbol = models.CharField(
+        unique=True, max_length=30, blank=False, null=False)
+    volume = models.IntegerField(blank=False, null=False)
+    timeStamp = models.DateTimeField()
+
+    class Meta:
+        managed = True
+        db_table = 'quotes_warehouse'

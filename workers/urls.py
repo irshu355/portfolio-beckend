@@ -13,7 +13,10 @@ urlpatterns = [
     path('scrap-watchlist-tickers',
          views.scrap_watchlist_tickers, name='scrap-watchlist-tickers'),
     path('test-quote-sockets',
-         views.test_quote_sockets, name='test-quote-sockets')
+         views.test_quote_sockets, name='test-quote-sockets'),
+
+    path('scrap-historical',
+         views.scrap_historical_quotes, name='scrap-historical')
 
 
 ]
