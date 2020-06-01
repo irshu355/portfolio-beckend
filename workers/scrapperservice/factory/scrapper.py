@@ -4,6 +4,7 @@ from workers.scrapperservice.factory.stockquote.cnbc import cnbcscrapper
 from workers.scrapperservice.factory.stockquote.yahoofinance import yfinancescrapper
 from workers.scrapperservice.factory.options.yahoofinance import yfoptionscrapper
 from workers.scrapperservice.factory.historicaldata.alphavintage import alphavintagehistoricalquotescrapper
+from workers.scrapperservice.factory.historicaldata.cnbc import cnbchistoricalquotescrapper
 from workers.models import TickerScrapperSource, OptionsScrapperSource, HistoricalQuoteScrapperSource
 from ticker.models import Health
 
@@ -49,10 +50,14 @@ class Scrapper:
             self.factory.register_options_builder(
                 OptionsScrapperSource.YF.value, yfoptionscrapper.YFOptionScrapperServiceBuilder())
 
-        # yahoo finance  options
+        # Alpha vintage historical data
         if not HistoricalQuoteScrapperSource.AlphaVintage.value in healths:
             self.factory.register_historicalquotes_builder(
                 HistoricalQuoteScrapperSource.AlphaVintage.value, alphavintagehistoricalquotescrapper.AlphaVintageHistoricalQuoteScrapperServiceBuilder())
+
+        if not HistoricalQuoteScrapperSource.CNBC.value in healths:
+            self.factory.register_historicalquotes_builder(
+                HistoricalQuoteScrapperSource.CNBC.value, cnbchistoricalquotescrapper.CNBCHistoricalQuoteScrapperServiceBuilder())
 
     def getScrapper(self):
         return self.factory.create(TickerScrapperSource.NASDAQ.value, **self.config)

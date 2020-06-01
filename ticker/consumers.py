@@ -77,6 +77,15 @@ class QuoteConsumer(WebsocketConsumer):
             'options_refresh': message
         }))
 
+    def historical_loaded_message(self, event):
+        message = event['message']
+
+        # Send message to WebSocket
+        self.send(text_data=json.dumps({
+            'type': 'historical-loaded',
+            'historical_loaded': message
+        }))
+
     def markUserOnline(self, user, status):
         try:
             profile = UserProfile.objects.get(user=user.id)

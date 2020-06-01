@@ -41,3 +41,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = "__all__"
+
+
+class QuoteWarehouseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuoteWareHouse
+        fields = ['timestamp', 'open', 'high', 'low', 'close', 'volume']
+
+
+class QuoteWarehouseSerializerMinimal(serializers.ModelSerializer):
+    class Meta:
+        model = QuoteWareHouse
+        fields = ['timestamp', 'close', 'volume']

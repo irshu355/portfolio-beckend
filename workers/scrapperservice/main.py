@@ -132,6 +132,11 @@ def _scrapHistoricalQuotes(ticker, interval):
     Instance, name = scrapper.getScrapperHistoricalQuotes()
     history, status, reason = Instance().scrap(ticker, interval)
     dal.postQuoteHistorical(history)
+    obj = {
+        "symbol": ticker,
+        "interval": interval
+    }
+    transmitHistoricalLoadedMessage(obj)
     return "added historical"+ticker + " with interval " + str(interval)
 
 
@@ -156,6 +161,17 @@ def transmitOptionsRefreshMessage(data):
         data["symbol"],
         {
             'type': 'options_refresh_message',
+            'message': data
+        }
+    )
+
+
+def transmitHistoricalLoadedMessage(data):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        data["symbol"],
+        {
+            'type': 'historical_loaded_message',
             'message': data
         }
     )

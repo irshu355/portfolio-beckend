@@ -81,7 +81,7 @@ def scrap_symbols(request):
 
 
 def scrap_historical_quotes(request):
-    workers.tasks.scrapHistoricalQuotes(request.GET['symbol'], 1)
+    workers.tasks.scrapHistoricalQuotes(request.GET['symbol'], 2)
     return HttpResponse("OK")
 
 

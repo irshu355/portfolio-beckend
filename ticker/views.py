@@ -4,13 +4,13 @@ from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework import permissions
 from django.contrib.auth.models import User, Group
-from ticker.serializers import TickerSerializer, WatchListSerializer, OptionsExpirySerializer, SymbolsSerializer, OptionsSerializer
-from ticker.models import Ticker, WatchList, Option, Symbol, UserProfile
+from ticker.models import Ticker, WatchList, Option, Symbol, UserProfile, QuoteWareHouse
 from rest_framework.views import APIView, Response
 from django.http import Http404
 from rest_framework import generics
 from rest_framework import status
 import datetime
+import ticker.serializers as ticker_serializers
 from rest_framework.decorators import api_view
 import json
 from django.core import serializers
@@ -18,10 +18,13 @@ from django.core.serializers.json import DjangoJSONEncoder
 from rest_framework.authtoken.models import Token
 from workers.scrapperservice.dalmanager import DALManager
 from workers.scrapperservice import main
+import workers.tasks as worker_tasks
 from django.http import QueryDict, JsonResponse
 from django.db.models import Q
 from dateutil import parser
 from django.contrib.auth.decorators import login_required
+from datetime import date, datetime, timedelta
+from django.conf import settings
 
 
 @api_view(['POST'])
@@ -61,7 +64,7 @@ def getWatchListByUserId(request):
     for obj in queryset:
         list.append(obj.ticker)
 
-    serializer = TickerSerializer(list, many=True)
+    serializer = ticker_serializers.TickerSerializer(list, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -97,7 +100,7 @@ def getOptionsByTicker(request):
     querySet = Option.objects.filter(
         ticker__symbol=ticker)
 
-    serializer = OptionsSerializer(querySet, many=True)
+    serializer = ticker_serializers.OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -112,7 +115,7 @@ def getOptionsByExpiry(request):
     querySet = Option.objects.filter(
         Q(ticker__symbol=ticker) & Q(expires=date_object.date()))
 
-    serializer = OptionsSerializer(querySet, many=True)
+    serializer = ticker_serializers.OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -121,7 +124,8 @@ def getOptionsExpiries(request):
     ticker = request.GET['ticker']
     querySet = Option.objects.filter(ticker__symbol=ticker).distinct('expires')
 
-    serializer = OptionsExpirySerializer(querySet, many=True)
+    serializer = ticker_serializers.OptionsExpirySerializer(
+        querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -131,7 +135,7 @@ def getOptionsWithIvByTicker(request):
     querySet = Option.objects.filter(
         ticker__symbol=ticker).order_by('-iv')[:10]
 
-    serializer = OptionsSerializer(querySet, many=True)
+    serializer = ticker_serializers.OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -141,13 +145,45 @@ def getOptionsWithVolByTicker(request):
     querySet = Option.objects.filter(
         ticker__symbol=ticker).order_by('-volume')[:10]
 
-    serializer = OptionsSerializer(querySet, many=True)
+    serializer = ticker_serializers.OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
 def getTicker(request, symbol):
     print(symbol)
+
+
+@api_view(['GET'])
+def getHistoricalIntra(request):
+    # 1D = 1Min
+    # 5d(1W) = 5min
+    # 1M = 3 hrs, 9.30,12.30,4.00pm
+    # 6M = open and close
+    # 1Y =  1D close
+    # 5Y = 1W close
+
+    symbol = request.GET['symbol']
+    now = datetime.now()
+    marketOpens = todayAt(9, 30, 00)
+
+    if (now < marketOpens):
+        _date = date.today() - timedelta(days=1)
+    else:
+        _date = date.today()
+
+    querySet = QuoteWareHouse.objects.filter(
+        Q(symbol=symbol) & Q(timestamp__date=_date))
+
+    if querySet.count() == 0:
+        worker_tasks.scrapHistoricalQuotes.delay(
+            symbol, settings.QUOTE_INTRA_DAY_DELAY)
+        return Response([], status=status.HTTP_208_ALREADY_REPORTED)
+
+    serializer = ticker_serializers.QuoteWarehouseSerializerMinimal(
+        querySet, many=True)
+    return Response(serializer.data, status=status.HTTP_208_ALREADY_REPORTED)
+    # querySet = QuoteWareHouse.objects.get(symbol=symbol).
 
 
 class TickerApi(APIView):
@@ -171,13 +207,14 @@ class TickerApi(APIView):
         ticker = self.get_object(data["symbol"])
         if ticker == Http404:
             print("insert")
-            serializer = TickerSerializer(data=request.data)
+            serializer = ticker_serializers.TickerSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            serializer = TickerSerializer(ticker, data=request.data)
+            serializer = ticker_serializers.TickerSerializer(
+                ticker, data=request.data)
             if (serializer.is_valid()):
                 serializer.save()
                 return Response(serializer.data)
@@ -185,7 +222,7 @@ class TickerApi(APIView):
 
 
 class TickerViewSet(viewsets.ModelViewSet):
-    serializer_class = TickerSerializer
+    serializer_class = ticker_serializers.TickerSerializer
     queryset = Ticker.objects.all()
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -196,7 +233,12 @@ class ListTickerView(generics.ListAPIView):
     """
 
     queryset = Ticker.objects.all()
-    serializer_class = TickerSerializer
+    serializer_class = ticker_serializers.TickerSerializer
+
+
+def todayAt(hr, min=0, sec=0):
+    now = datetime.now()
+    return now.replace(hour=hr, minute=min, second=sec)
 
 
 # Create your views here.

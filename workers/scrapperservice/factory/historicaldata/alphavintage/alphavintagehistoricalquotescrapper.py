@@ -13,6 +13,7 @@ import json
 from workers.models import HistoricalQuoteScrapperSource
 from datetime import datetime
 from decimal import Decimal
+from django.conf import settings
 
 
 class AlphaVintageHistoricalQuoteScrapperService:
@@ -22,19 +23,20 @@ class AlphaVintageHistoricalQuoteScrapperService:
         self.name = HistoricalQuoteScrapperSource.AlphaVintage.value
 
     # #intervals for historical data are determined as below:
-    # 1D - 1 Minute
+    # for accurate intervals, refer to settings.py
+    # 1D - 2 Minute
     # 5D - 7 Minutes
     # 1M - 30 Minutes
     # 6M - 240 Minutes(4 hrs)
     # 1Y - 480 Minutes(8 hrs)
 
     def scrap(self, symbol, interval):
-        if interval not in(1, 480):
+        if interval not in(settings.QUOTE_INTRA_DAY_DELAY, 480):
             print("this provider only support 1M or 1D")
             return
 
-        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={0}&interval=1min&apikey={1}'.format(
-            symbol, self._key) if interval == 1 else 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={0}&outputsize=full&apikey={1}'.format(
+        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={0}&interval=1min&apikey={1}&outputsize=full'.format(
+            symbol, self._key) if interval == settings.QUOTE_INTRA_DAY_DELAY else 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={0}&outputsize=full&apikey={1}'.format(
             symbol, self._key)
 
         requestResponse = requests.get(url, verify=False)
@@ -46,12 +48,12 @@ class AlphaVintageHistoricalQuoteScrapperService:
         return self.parseTimeSeries(jsonRes, symbol, interval), 200, ""
 
     def parseTimeSeries(self, jsonRes, symbol, interval):
-        seriesObj = jsonRes["Time Series (1min)"] if interval == 1 else jsonRes["Time Series (Daily)"]
+        seriesObj = jsonRes["Time Series (1min)"] if interval == settings.QUOTE_INTRA_DAY_DELAY else jsonRes["Time Series (Daily)"]
         series = []
         for time in seriesObj.keys():
 
             datetime_object = datetime.strptime(
-                time if interval == 1 else time+" 16:00:00", '%Y-%m-%d %H:%M:%S')
+                time if interval == settings.QUOTE_INTRA_DAY_DELAY else time+" 16:00:00", '%Y-%m-%d %H:%M:%S')
             obj = {
                 "open": float(seriesObj[time]["1. open"]),
                 "high": float(seriesObj[time]["2. high"]),
