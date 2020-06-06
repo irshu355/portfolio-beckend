@@ -198,6 +198,9 @@ class QuoteWareHouse(models.Model):
     volume = models.IntegerField(blank=False, null=False)
     timestamp = models.DateTimeField()
 
+    def __str__(self):
+        return self.symbol + " => "+self.timestamp.strftime("%d %b %y - %H:%M:00")
+
     class Meta:
         managed = True
         db_table = 'quotes_warehouse'

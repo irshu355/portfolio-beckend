@@ -156,7 +156,7 @@ def getTicker(request, symbol):
 
 @api_view(['GET'])
 def getHistoricalIntra(request):
-    # 1D = 1Min
+    # 1D = 2Min
     # 5d(1W) = 5min
     # 1M = 3 hrs, 9.30,12.30,4.00pm
     # 6M = open and close
@@ -182,7 +182,7 @@ def getHistoricalIntra(request):
 
     serializer = ticker_serializers.QuoteWarehouseSerializerMinimal(
         querySet, many=True)
-    return Response(serializer.data, status=status.HTTP_208_ALREADY_REPORTED)
+    return Response(serializer.data)
     # querySet = QuoteWareHouse.objects.get(symbol=symbol).
 
 

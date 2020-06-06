@@ -31,7 +31,7 @@ class CNBCHistoricalQuoteScrapperService:
     # 1Y - 480 Minutes(8 hrs)
 
     def scrap(self, symbol, interval):
-        now = datetime.datetime.now()
+        now = datetime.now()
         if interval == settings.QUOTE_INTRA_DAY_DELAY:
 
             marketOpens = self.todayAt(9, 30, 00)
