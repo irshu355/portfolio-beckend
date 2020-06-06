@@ -199,7 +199,7 @@ class QuoteWareHouse(models.Model):
     timestamp = models.DateTimeField()
 
     def __str__(self):
-        return self.symbol + " => "+self.timestamp.strftime("%d %b %y - %H:%M:00")
+        return self.symbol + " => "+self.timestamp.strftime("%d %b %y - %H:%M:00") + " => " + str(self.close)
 
     class Meta:
         managed = True
