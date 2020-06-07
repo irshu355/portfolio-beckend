@@ -36,17 +36,33 @@ class CNBCHistoricalQuoteScrapperService:
 
             marketOpens = self.todayAt(9, 30, 00)
 
-            if(now > marketOpens):
-                date_from = now.strftime('%Y%m%d%H') + "093000"
-                date_to = now.strftime('%Y%m%d%H%M%s') + "160000"
+            day = now.strftime("%A")
+
+            if day == 'Saturday':
+                now = marketOpens - timedelta(days=1)
+                date_from = now.strftime('%Y%m%d') + "093000"
+                date_to = now.strftime('%Y%m%d') + "160000"
+            elif day == 'Sunday':
+                now = marketOpens - timedelta(days=2)
+                date_from = now.strftime('%Y%m%d') + "093000"
+                date_to = now.strftime('%Y%m%d') + "160000"
+            elif now < marketOpens:
+                now = marketOpens - \
+                    timedelta(
+                        days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
+                date_from = now.strftime('%Y%m%d') + "093000"
+                date_to = now.strftime('%Y%m%d') + "160000"
             else:
-                date_from = datetime.strftime(
-                    datetime.now() - timedelta(1), '%Y%m%d') + "093000"
-                date_to = datetime.strftime(
-                    datetime.now() - timedelta(1), '%Y%m%d') + "160000"
+                date_from = now.strftime('%Y%m%d') + "093000"
+                date_to = now.strftime('%Y%m%d') + "160000"
+
+        # unfortunately cnbc dont support 2min, switch to 1min...
+        if interval == 2:
+            interval = 1
+
         # for ref 'https://ts-api.cnbc.com/harmony/app/bars/AAL/30M/20120718000000/20200626000000/adjusted/EST5EDT.json'
-        url = 'https://ts-api.cnbc.com/harmony/app/bars/AAL/{0}M/{1}/{2}/adjusted/EST5EDT.json'.format(
-            interval, date_from, date_to)
+        url = 'https://ts-api.cnbc.com/harmony/app/bars/{0}/{1}M/{2}/{3}/adjusted/EST5EDT.json'.format(
+            symbol, interval, date_from, date_to)
 
         requestResponse = requests.get(url, verify=False)
         if (requestResponse.status_code != 200):
@@ -56,7 +72,7 @@ class CNBCHistoricalQuoteScrapperService:
         return self.parseTimeSeries(jsonRes, symbol, interval), 200, ""
 
     def parseTimeSeries(self, jsonRes, symbol, interval):
-        history = jsonRes["history"]["priceBars"]
+        history = jsonRes["barData"]["priceBars"]
         series = []
 
         for rec in history:
@@ -68,14 +84,14 @@ class CNBCHistoricalQuoteScrapperService:
                 "high": float(rec["high"]),
                 "low": float(rec["low"]),
                 "timestamp": datetime_object,
-                "volume": float(rec["volume"]),
+                "volume": rec["volume"],
                 "symbol": symbol
             }
             series.append(obj)
         return series
 
     def todayAt(self, hr, min=0, sec=0):
-        now = datetime.datetime.now()
+        now = datetime.now()
         return now.replace(hour=hr, minute=min, second=sec)
 
 

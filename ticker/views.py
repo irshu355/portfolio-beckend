@@ -164,16 +164,23 @@ def getHistoricalIntra(request):
     # 5Y = 1W close
 
     symbol = request.GET['symbol']
+
     now = datetime.now()
+
     marketOpens = todayAt(9, 30, 00)
 
-    if (now < marketOpens):
-        _date = date.today() - timedelta(days=1)
-    else:
-        _date = date.today()
+    day = now.strftime("%A")
+
+    if day == 'Saturday':
+        now = marketOpens - timedelta(days=1)
+    elif day == 'Sunday':
+        now = marketOpens - timedelta(days=2)
+    elif now < marketOpens:
+        now = marketOpens - timedelta(
+            days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
 
     querySet = QuoteWareHouse.objects.filter(
-        Q(symbol=symbol))
+        Q(symbol=symbol) & Q(timestamp__startswith=now.date()))
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(

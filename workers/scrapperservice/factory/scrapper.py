@@ -51,9 +51,10 @@ class Scrapper:
                 OptionsScrapperSource.YF.value, yfoptionscrapper.YFOptionScrapperServiceBuilder())
 
         # Alpha vintage historical data
-        if not HistoricalQuoteScrapperSource.AlphaVintage.value in healths:
-            self.factory.register_historicalquotes_builder(
-                HistoricalQuoteScrapperSource.AlphaVintage.value, alphavintagehistoricalquotescrapper.AlphaVintageHistoricalQuoteScrapperServiceBuilder())
+        # AlphaVintage only provide EOD for NASDAQ
+        # if not HistoricalQuoteScrapperSource.AlphaVintage.value in healths:
+        #     self.factory.register_historicalquotes_builder(
+        #         HistoricalQuoteScrapperSource.AlphaVintage.value, alphavintagehistoricalquotescrapper.AlphaVintageHistoricalQuoteScrapperServiceBuilder())
 
         if not HistoricalQuoteScrapperSource.CNBC.value in healths:
             self.factory.register_historicalquotes_builder(
