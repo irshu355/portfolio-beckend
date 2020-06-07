@@ -173,7 +173,7 @@ def getHistoricalIntra(request):
         _date = date.today()
 
     querySet = QuoteWareHouse.objects.filter(
-        Q(symbol=symbol) & Q(timestamp__date=_date))
+        Q(symbol=symbol))
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(
