@@ -180,7 +180,7 @@ def getHistoricalIntra(request):
             symbol, settings.QUOTE_INTRA_DAY_DELAY)
         return Response([], status=status.HTTP_208_ALREADY_REPORTED)
 
-    serializer = ticker_serializers.QuoteWarehouseSerializerMinimal(
+    serializer = ticker_serializers.QuoteWarehouseSerializer(
         querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
     # querySet = QuoteWareHouse.objects.get(symbol=symbol).
