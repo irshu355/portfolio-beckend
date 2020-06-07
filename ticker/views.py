@@ -185,6 +185,7 @@ def getHistoricalIntra(request):
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(
             symbol, settings.QUOTE_INTRA_DAY_DELAY)
+
         return Response([], status=status.HTTP_208_ALREADY_REPORTED)
 
     serializer = ticker_serializers.QuoteWarehouseSerializer(
