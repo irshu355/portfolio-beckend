@@ -130,9 +130,8 @@ def _scrapHistoricalQuotes(ticker, interval):
     scrapper = Scrapper()
     dal = DALManager()
     Instance, name = scrapper.getScrapperHistoricalQuotes()
-    # uncomment aftre test
-    #history, status, reason = Instance().scrap(ticker, interval)
-    # dal.postQuoteHistorical(history)
+    history, status, reason = Instance().scrap(ticker, interval)
+    dal.postQuoteHistorical(history)
     obj = {
         "symbol": ticker,
         "interval": interval
