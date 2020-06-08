@@ -180,7 +180,7 @@ def getHistoricalIntra(request):
             days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
 
     querySet = QuoteWareHouse.objects.filter(
-        Q(symbol=symbol) & Q(timestamp__startswith=now.date()))
+        Q(symbol=symbol) & Q(timestamp__startswith=now.date() & Q(interval=0)))
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(
