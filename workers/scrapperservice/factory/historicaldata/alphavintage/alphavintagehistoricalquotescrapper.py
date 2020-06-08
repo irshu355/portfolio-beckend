@@ -24,7 +24,7 @@ class AlphaVintageHistoricalQuoteScrapperService:
 
     # #intervals for historical data are determined as below:
     # for accurate intervals, refer to settings.py
-    # 1D - 2 Minute
+    # 1D - 1 Minute
     # 5D - 7 Minutes
     # 1M - 30 Minutes
     # 6M - 240 Minutes(4 hrs)

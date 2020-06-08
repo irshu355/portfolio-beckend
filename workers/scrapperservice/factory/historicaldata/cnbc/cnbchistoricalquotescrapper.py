@@ -22,8 +22,8 @@ class CNBCHistoricalQuoteScrapperService:
         self._secret = consumer_secret
         self.name = HistoricalQuoteScrapperSource.CNBC.value
 
-    #
     # #intervals for historical data are determined as below:
+    # for accurate intervals, refer to settings.py
     # 1D - 1 Minute
     # 5D - 7 Minutes
     # 1M - 30 Minutes
@@ -81,7 +81,8 @@ class CNBCHistoricalQuoteScrapperService:
                 "low": float(rec["low"]),
                 "timestamp": datetime_object,
                 "volume": rec["volume"],
-                "symbol": symbol
+                "symbol": symbol,
+                "interval": self.getInterval(interval)
             }
             series.append(obj)
         return series
@@ -89,6 +90,9 @@ class CNBCHistoricalQuoteScrapperService:
     def todayAt(self, hr, min=0, sec=0):
         now = datetime.now()
         return now.replace(hour=hr, minute=min, second=sec)
+
+    def getInterval(self, interval):
+        return 0 if interval == settings.QUOTE_INTRA_DAY_DELAY else 1 if interval == settings.QUOTE_5D_DELAY else 2
 
 
 class CNBCHistoricalQuoteScrapperServiceBuilder:
