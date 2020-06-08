@@ -4,7 +4,7 @@ from django.http import HttpResponse
 import datetime
 import workers.tasks
 from ticker.models import Ticker
-
+from django.conf import settings
 # Create your tasks here
 from celery import shared_task
 from workers.scrapperservice.main import _scrap, streamTestTickerQuotes
@@ -81,7 +81,8 @@ def scrap_symbols(request):
 
 
 def scrap_historical_quotes(request):
-    workers.tasks.scrapHistoricalQuotes(request.GET['symbol'], 2)
+    workers.tasks.scrapHistoricalQuotes(
+        request.GET['symbol'], request.GET['interval'])
     return HttpResponse("OK")
 
 
