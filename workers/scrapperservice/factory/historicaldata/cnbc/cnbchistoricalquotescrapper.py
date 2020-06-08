@@ -56,10 +56,6 @@ class CNBCHistoricalQuoteScrapperService:
                 date_from = now.strftime('%Y%m%d') + "093000"
                 date_to = now.strftime('%Y%m%d') + "160000"
 
-        # unfortunately cnbc dont support 2min, switch to 1min...
-        if interval == 2:
-            interval = 1
-
         # for ref 'https://ts-api.cnbc.com/harmony/app/bars/AAL/30M/20120718000000/20200626000000/adjusted/EST5EDT.json'
         url = 'https://ts-api.cnbc.com/harmony/app/bars/{0}/{1}M/{2}/{3}/adjusted/EST5EDT.json'.format(
             symbol, interval, date_from, date_to)
