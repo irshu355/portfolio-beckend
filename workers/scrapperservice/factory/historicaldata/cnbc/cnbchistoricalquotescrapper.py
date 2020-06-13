@@ -25,36 +25,35 @@ class CNBCHistoricalQuoteScrapperService:
     # #intervals for historical data are determined as below:
     # for accurate intervals, refer to settings.py
     # 1D - 1 Minute
-    # 5D - 7 Minutes
+    # 5D - 5M Minutes
     # 1M - 30 Minutes
-    # 6M - 240 Minutes(4 hrs)
-    # 1Y - 480 Minutes(8 hrs)
+    # 6M - 1D
+    # 1Y - 1W
 
     def scrap(self, symbol, interval):
         now = datetime.now()
-        if interval == settings.QUOTE_INTRA_DAY_DELAY:
 
-            marketOpens = self.todayAt(9, 30, 00)
+        marketOpens = self.todayAt(9, 30, 00)
 
-            day = now.strftime("%A")
+        day = now.strftime("%A")
 
-            if day == 'Saturday':
-                now = marketOpens - timedelta(days=1)
-                date_from = now.strftime('%Y%m%d') + "093000"
-                date_to = now.strftime('%Y%m%d') + "160000"
-            elif day == 'Sunday':
-                now = marketOpens - timedelta(days=2)
-                date_from = now.strftime('%Y%m%d') + "093000"
-                date_to = now.strftime('%Y%m%d') + "160000"
-            elif now < marketOpens:
-                now = marketOpens - \
-                    timedelta(
-                        days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
-                date_from = now.strftime('%Y%m%d') + "093000"
-                date_to = now.strftime('%Y%m%d') + "160000"
-            else:
-                date_from = now.strftime('%Y%m%d') + "093000"
-                date_to = now.strftime('%Y%m%d') + "160000"
+        if day == 'Saturday':
+            now = marketOpens - timedelta(days=1)
+            date_from = now.strftime('%Y%m%d') + "093000"
+            date_to = now.strftime('%Y%m%d') + "160000"
+        elif day == 'Sunday':
+            now = marketOpens - timedelta(days=2)
+            date_from = now.strftime('%Y%m%d') + "093000"
+            date_to = now.strftime('%Y%m%d') + "160000"
+        elif now < marketOpens:
+            now = marketOpens - \
+                timedelta(
+                    days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
+            date_from = now.strftime('%Y%m%d') + "093000"
+            date_to = now.strftime('%Y%m%d') + "160000"
+        else:
+            date_from = now.strftime('%Y%m%d') + "093000"
+            date_to = now.strftime('%Y%m%d') + "160000"
 
         # for ref 'https://ts-api.cnbc.com/harmony/app/bars/AAL/30M/20120718000000/20200626000000/adjusted/EST5EDT.json'
         url = 'https://ts-api.cnbc.com/harmony/app/bars/{0}/{1}M/{2}/{3}/adjusted/EST5EDT.json'.format(

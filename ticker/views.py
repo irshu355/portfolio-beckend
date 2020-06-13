@@ -163,7 +163,7 @@ def getHistoricalIntra(request):
     # 1Y =  1D close
     # 5Y = 1W close
 
-    interval = 0
+    interval = request.GET['interval']
     symbol = request.GET['symbol']
 
     now = datetime.now()

@@ -115,17 +115,17 @@ class DALManager:
                 rec["ticker"] = tickerId
 
             exists = self.get_historical_object(
-                rec["ticker"], rec["timestamp"])
+                rec["ticker"], rec["timestamp"], rec["interval"])
 
             if (exists == Http404):
                 forInsert.append(QuoteWareHouse(
                     ticker=ticker, open=rec["open"], close=rec["close"], high=rec["high"], low=rec["low"],
-                    timestamp=rec["timestamp"], volume=rec["volume"], symbol=rec["symbol"]))
+                    timestamp=rec["timestamp"], volume=rec["volume"], symbol=rec["symbol"], interval=rec["interval"]))
 
         QuoteWareHouse.objects.bulk_create(forInsert)
 
-    def get_historical_object(self, ticker, timestamp):
+    def get_historical_object(self, ticker, timestamp, interval):
         try:
-            return QuoteWareHouse.objects.get(ticker=ticker, timestamp=timestamp)
+            return QuoteWareHouse.objects.get(ticker=ticker, timestamp=timestamp, interval=interval)
         except QuoteWareHouse.DoesNotExist:
             return Http404
