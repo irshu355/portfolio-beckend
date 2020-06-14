@@ -14,6 +14,7 @@ from workers.models import HistoricalQuoteScrapperSource
 from datetime import datetime, timedelta
 from decimal import Decimal
 from django.conf import settings
+import ticker.utils.utils as tickerUtils
 
 
 class CNBCHistoricalQuoteScrapperService:
@@ -46,23 +47,8 @@ class CNBCHistoricalQuoteScrapperService:
                 timedelta(days=3) if day == 'Monday' else marketOpens - \
                 timedelta(days=1)
         date_to = now.strftime('%Y%m%d') + "160000"
-        period = "1M"
-        deltaD = 0
-        if duration == "5D":
-            period = "5M"
-            deltaD = 4
-        elif duration == "1M":
-            period = "1H"
-            deltaD = 30
-        elif duration == "6M":
-            period = "1D"
-            deltaD = 6*30
-        elif duration == "1Y":
-            period = "1D"
-            deltaD = 12*30
-        elif duration == "5Y":
-            period = "1W"
-            deltaD = 60 * 30
+
+        period, deltaD = tickerUtils.getPeriodTimeDelta(duration)
 
         if deltaD != 0:
             now = now - timedelta(days=deltaD)

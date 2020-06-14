@@ -25,6 +25,7 @@ from dateutil import parser
 from django.contrib.auth.decorators import login_required
 from datetime import date, datetime, timedelta
 from django.conf import settings
+import ticker.utils.utils as tickerUtils
 
 
 @api_view(['POST'])
@@ -166,21 +167,6 @@ def getHistorical(request):
     duration = request.GET['duration']
     symbol = request.GET['symbol']
 
-    period = "1M"
-
-    if duration == "5D":
-        period = "5M"
-    elif duration == "1M":
-        period = "1H"
-    elif duration == "6M":
-        period = "1D"
-    elif duration == "1Y":
-        period = "1D"
-    elif duration == "5Y":
-        period = "1W"
-    elif duration == "ALL":  # not using yet
-        period = "3Mo"
-
     now = datetime.now()
 
     marketOpens = todayAt(9, 30, 00)
@@ -196,8 +182,18 @@ def getHistorical(request):
             days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
     # if period 5D,1H,1D,1W or 1Y,
 
-    querySet = QuoteWareHouse.objects.filter(
-        Q(symbol=symbol) & Q(timestamp__startswith=now.date()) & Q(period=period))
+    period, deltaD = tickerUtils.getPeriodTimeDelta(duration)
+
+    if deltaD != 0:
+        now = now - timedelta(days=deltaD)
+
+    if duration == '1D':
+        querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(
+            timestamp__startswith=now.date()) & Q(period=period))
+    else:
+        dateEnds = todayAt(9, 30, 00)
+        querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(
+            timestamp__range=[now, dateEnds]) & Q(period=period))
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(
