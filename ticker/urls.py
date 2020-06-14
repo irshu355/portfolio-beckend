@@ -19,7 +19,7 @@ urlpatterns = [
     path(r'toggle_watchlist', views.toggleWatchlist),
     path(r'symbols', views.getSymbols),
     path(r'ticker/<str:symbol>', views.getTicker),
-    path(r'historical_intra', views.getHistoricalIntra)
+    path(r'historical', views.getHistorical)
 
 ]
 

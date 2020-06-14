@@ -155,15 +155,15 @@ def getTicker(request, symbol):
 
 
 @api_view(['GET'])
-def getHistoricalIntra(request):
-    # 1D = 2Min
+def getHistorical(request):
+    # 1D = 1M
     # 5d(1W) = 5min
-    # 1M = 3 hrs, 9.30,12.30,4.00pm
-    # 6M = open and close
-    # 1Y =  1D close
-    # 5Y = 1W close
+    # 1M = 1 HR
+    # 6M = 1D
+    # 1Y =  1W
+    # 5Y = 1M
 
-    interval = request.GET['interval']
+    period = request.GET['period']
     symbol = request.GET['symbol']
 
     now = datetime.now()
@@ -181,11 +181,11 @@ def getHistoricalIntra(request):
             days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
 
     querySet = QuoteWareHouse.objects.filter(
-        Q(symbol=symbol) & Q(timestamp__startswith=now.date()) & Q(interval=interval))
+        Q(symbol=symbol) & Q(timestamp__startswith=now.date()) & Q(period=period))
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(
-            symbol, settings.QUOTE_INTRA_DAY_DELAY)
+            symbol, period)
 
         return Response([], status=status.HTTP_208_ALREADY_REPORTED)
 

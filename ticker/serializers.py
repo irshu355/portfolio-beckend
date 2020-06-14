@@ -47,7 +47,7 @@ class QuoteWarehouseSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuoteWareHouse
         fields = ['id', 'symbol', 'timestamp',
-                  'open', 'high', 'low', 'close', 'volume', 'interval']
+                  'open', 'high', 'low', 'close', 'volume', 'period']
 
 
 class QuoteWarehouseSerializerMinimal(serializers.ModelSerializer):

@@ -82,7 +82,7 @@ def scrap_symbols(request):
 
 def scrap_historical_quotes(request):
     workers.tasks.scrapHistoricalQuotes(
-        request.GET['symbol'], int(request.GET['interval']))
+        request.GET['symbol'], request.GET['period'])
     return HttpResponse("OK")
 
 

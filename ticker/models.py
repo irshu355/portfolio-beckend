@@ -197,7 +197,8 @@ class QuoteWareHouse(models.Model):
         unique=False, max_length=30, blank=False, null=False)
     volume = models.IntegerField(blank=False, null=False)
     timestamp = models.DateTimeField()
-    interval = models.IntegerField(blank=False, null=False, default=0)
+    period = models.CharField(
+        unique=False, max_length=2, blank=False, null=False, default='1D')
 
     def __str__(self):
         return self.symbol + " => "+self.timestamp.strftime("%d %b %y - %H:%M:00") + " => " + str(self.close)

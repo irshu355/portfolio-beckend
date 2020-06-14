@@ -30,7 +30,7 @@ class CNBCHistoricalQuoteScrapperService:
     # 6M - 1D
     # 1Y - 1W
 
-    def scrap(self, symbol, interval):
+    def scrap(self, symbol, period):
         now = datetime.now()
 
         marketOpens = self.todayAt(9, 30, 00)
@@ -56,17 +56,17 @@ class CNBCHistoricalQuoteScrapperService:
             date_to = now.strftime('%Y%m%d') + "160000"
 
         # for ref 'https://ts-api.cnbc.com/harmony/app/bars/AAL/30M/20120718000000/20200626000000/adjusted/EST5EDT.json'
-        url = 'https://ts-api.cnbc.com/harmony/app/bars/{0}/{1}M/{2}/{3}/adjusted/EST5EDT.json'.format(
-            symbol, interval, date_from, date_to)
+        url = 'https://ts-api.cnbc.com/harmony/app/bars/{0}/{1}/{2}/{3}/adjusted/EST5EDT.json'.format(
+            symbol, period, date_from, date_to)
 
         requestResponse = requests.get(url, verify=False)
         if (requestResponse.status_code != 200):
             return [], requestResponse.status_code, requestResponse.reason
         jsonRes = json.loads(requestResponse.text)
 
-        return self.parseTimeSeries(jsonRes, symbol, interval), 200, ""
+        return self.parseTimeSeries(jsonRes, symbol, period), 200, ""
 
-    def parseTimeSeries(self, jsonRes, symbol, interval):
+    def parseTimeSeries(self, jsonRes, symbol, period):
         history = jsonRes["barData"]["priceBars"]
         series = []
 
@@ -81,7 +81,7 @@ class CNBCHistoricalQuoteScrapperService:
                 "timestamp": datetime_object,
                 "volume": rec["volume"],
                 "symbol": symbol,
-                "interval": self.getInterval(interval)
+                "period": period
             }
             series.append(obj)
         return series
@@ -89,9 +89,6 @@ class CNBCHistoricalQuoteScrapperService:
     def todayAt(self, hr, min=0, sec=0):
         now = datetime.now()
         return now.replace(hour=hr, minute=min, second=sec)
-
-    def getInterval(self, interval):
-        return 0 if interval == settings.QUOTE_INTRA_DAY_DELAY else 1 if interval == settings.QUOTE_5D_DELAY else 2
 
 
 class CNBCHistoricalQuoteScrapperServiceBuilder:
