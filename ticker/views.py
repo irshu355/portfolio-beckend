@@ -157,14 +157,29 @@ def getTicker(request, symbol):
 @api_view(['GET'])
 def getHistorical(request):
     # 1D = 1M
-    # 5d(1W) = 5min
-    # 1M = 1 HR
+    # 5d(1W) = 5M
+    # 1M = 1H
     # 6M = 1D
-    # 1Y =  1W
-    # 5Y = 1M
+    # 1Y =  1D
+    # 5Y = 1W
 
-    period = request.GET['period']
+    duration = request.GET['duration']
     symbol = request.GET['symbol']
+
+    period = "1M"
+
+    if duration == "5D":
+        period = "5M"
+    elif duration == "1M":
+        period = "1H"
+    elif duration == "6M":
+        period = "1D"
+    elif duration == "1Y":
+        period = "1D"
+    elif duration == "5Y":
+        period = "1W"
+    elif duration == "ALL":  # not using yet
+        period = "3Mo"
 
     now = datetime.now()
 
@@ -179,13 +194,14 @@ def getHistorical(request):
     elif now < marketOpens:
         now = marketOpens - timedelta(
             days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
+    # if period 5D,1H,1D,1W or 1Y,
 
     querySet = QuoteWareHouse.objects.filter(
         Q(symbol=symbol) & Q(timestamp__startswith=now.date()) & Q(period=period))
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(
-            symbol, period)
+            symbol, duration)
 
         return Response([], status=status.HTTP_208_ALREADY_REPORTED)
 

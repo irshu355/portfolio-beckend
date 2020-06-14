@@ -30,7 +30,7 @@ class CNBCHistoricalQuoteScrapperService:
     # 6M - 1D
     # 1Y - 1W
 
-    def scrap(self, symbol, period):
+    def scrap(self, symbol, duration):
         now = datetime.now()
 
         marketOpens = self.todayAt(9, 30, 00)
@@ -39,22 +39,35 @@ class CNBCHistoricalQuoteScrapperService:
 
         if day == 'Saturday':
             now = marketOpens - timedelta(days=1)
-            date_from = now.strftime('%Y%m%d') + "093000"
-            date_to = now.strftime('%Y%m%d') + "160000"
         elif day == 'Sunday':
             now = marketOpens - timedelta(days=2)
-            date_from = now.strftime('%Y%m%d') + "093000"
-            date_to = now.strftime('%Y%m%d') + "160000"
         elif now < marketOpens:
             now = marketOpens - \
-                timedelta(
-                    days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
-            date_from = now.strftime('%Y%m%d') + "093000"
-            date_to = now.strftime('%Y%m%d') + "160000"
-        else:
-            date_from = now.strftime('%Y%m%d') + "093000"
-            date_to = now.strftime('%Y%m%d') + "160000"
+                timedelta(days=3) if day == 'Monday' else marketOpens - \
+                timedelta(days=1)
+        date_to = now.strftime('%Y%m%d') + "160000"
+        period = "1M"
+        deltaD = 0
+        if duration == "5D":
+            period = "5M"
+            deltaD = 4
+        elif duration == "1M":
+            period = "1H"
+            deltaD = 30
+        elif duration == "6M":
+            period = "1D"
+            deltaD = 6*30
+        elif duration == "1Y":
+            period = "1D"
+            deltaD = 12*30
+        elif duration == "5Y":
+            period = "1W"
+            deltaD = 60 * 30
 
+        if deltaD != 0:
+            now = now - timedelta(days=deltaD)
+
+        date_from = now.strftime('%Y%m%d') + "093000"
         # for ref 'https://ts-api.cnbc.com/harmony/app/bars/AAL/30M/20120718000000/20200626000000/adjusted/EST5EDT.json'
         url = 'https://ts-api.cnbc.com/harmony/app/bars/{0}/{1}/{2}/{3}/adjusted/EST5EDT.json'.format(
             symbol, period, date_from, date_to)
@@ -73,6 +86,9 @@ class CNBCHistoricalQuoteScrapperService:
         for rec in history:
             datetime_object = datetime.strptime(
                 rec["tradeTime"], '%Y%m%d%H%M%S')
+            time = int(datetime_object.strftime('%H%M'))
+            if (time < 930 or time > 1559):
+                continue
             obj = {
                 "open": float(rec["open"]),
                 "close": float(rec["close"]),
@@ -84,6 +100,9 @@ class CNBCHistoricalQuoteScrapperService:
                 "period": period
             }
             series.append(obj)
+
+        for x in series:
+            print(x["timestamp"].strftime("%d %b %y - %H:%M:00"))
         return series
 
     def todayAt(self, hr, min=0, sec=0):

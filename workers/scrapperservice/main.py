@@ -126,18 +126,18 @@ def _scrapOption(ticker):
 ##########################################################################################################
 
 
-def _scrapHistoricalQuotes(ticker, period):
+def _scrapHistoricalQuotes(ticker, duration):
     scrapper = Scrapper()
     dal = DALManager()
     Instance, name = scrapper.getScrapperHistoricalQuotes()
-    history, status, reason = Instance().scrap(ticker, period)
+    history, status, reason = Instance().scrap(ticker, duration)
     dal.postQuoteHistorical(history)
     obj = {
         "symbol": ticker,
-        "period": period
+        "duration": duration
     }
     transmitHistoricalLoadedMessage(obj)
-    return "added historical"+ticker + " with period " + period
+    return "added historical"+ticker + " with period " + duration
 
 
 ##########################################################################################################

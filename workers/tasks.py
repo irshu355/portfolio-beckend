@@ -69,5 +69,5 @@ def scrapSymbolsNYSE():
 
 
 @shared_task
-def scrapHistoricalQuotes(symbol, period):
-    return workers.scrapperservice.main._scrapHistoricalQuotes(symbol, period)
+def scrapHistoricalQuotes(symbol, duration):
+    return workers.scrapperservice.main._scrapHistoricalQuotes(symbol, duration)
