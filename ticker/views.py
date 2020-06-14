@@ -199,7 +199,7 @@ def getHistorical(request):
         worker_tasks.scrapHistoricalQuotes.delay(
             symbol, duration)
 
-        return Response([], status=status.HTTP_208_ALREADY_REPORTED)
+        return HttpResponse(status=208)
 
     serializer = ticker_serializers.QuoteWarehouseSerializer(
         querySet, many=True)
