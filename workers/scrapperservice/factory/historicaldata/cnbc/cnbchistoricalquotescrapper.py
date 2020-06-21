@@ -73,8 +73,13 @@ class CNBCHistoricalQuoteScrapperService:
             datetime_object = datetime.strptime(
                 rec["tradeTime"], '%Y%m%d%H%M%S')
             time = int(datetime_object.strftime('%H%M'))
-            if (time < 930 or time > 1559):
-                continue
+
+            if(period == '1M' or period == '5M' or period == '1H'):
+                if (time < 930 or time > 1559):
+                    continue
+
+            # for 6M and forth, hour is invalid from cnbc
+
             obj = {
                 "open": float(rec["open"]),
                 "close": float(rec["close"]),
