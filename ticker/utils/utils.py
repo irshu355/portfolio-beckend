@@ -13,7 +13,7 @@ class UserTier(IntEnum):
 
 def getPeriodTimeDelta(duration):
     period = "1M"
-    deltaD = 0
+    deltaD = 0  # refers to historical days to revind from
     if duration == "5D":
         period = "5M"
         deltaD = 4

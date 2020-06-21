@@ -23,9 +23,10 @@ from django.http import QueryDict, JsonResponse
 from django.db.models import Q
 from dateutil import parser
 from django.contrib.auth.decorators import login_required
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from django.conf import settings
 import ticker.utils.utils as tickerUtils
+import pytz
 
 
 @api_view(['POST'])
@@ -173,6 +174,7 @@ def getHistorical(request):
 
     day = now.strftime("%A")
 
+    # remember, we ignore time, so timezone doesnt really matter
     if day == 'Saturday':
         now = marketOpens - timedelta(days=1)
     elif day == 'Sunday':
@@ -180,8 +182,16 @@ def getHistorical(request):
     elif now < marketOpens:
         now = marketOpens - timedelta(
             days=3) if day == 'Monday' else marketOpens - timedelta(days=1)
-    # if period 5D,1H,1D,1W or 1Y,
+    else:
+        # this is meant for 5D,1M,6M and 1Y to verify if historical needs to be loeaded from remote service
+        backupNow = now - timedelta(days=1)
 
+    try:
+        backupNow
+    except NameError:
+        backupNow = now
+
+    # if period 5D,1H,1D,1W or 1Y,
     period, deltaD = tickerUtils.getPeriodTimeDelta(duration)
 
     if deltaD != 0:
@@ -189,17 +199,33 @@ def getHistorical(request):
 
     if duration == '1D':
         querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(
-            timestamp__startswith=now.date()) & Q(period=period))
+            timestamp__startswith=now.date()) & Q(period=period)).order_by('timestamp')
     else:
         dateEnds = todayAt(9, 30, 00)
         querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(
-            timestamp__range=[now, dateEnds]) & Q(period=period))
+            timestamp__range=[now, dateEnds]) & Q(period=period)).order_by('timestamp')
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotes.delay(
             symbol, duration)
 
         return HttpResponse(status=208)
+
+    # check if last record is yesterday for periods 5D,1M,6M,1Y
+    if duration == '5D' or duration == '1M' or duration == '6M' or duration == '1Y':
+        last = querySet[len(querySet) - 1] if querySet else None
+        my_timezone = pytz.timezone("America/New_York")
+
+        expectedLast = pytz.timezone("America/New_York").localize(backupNow)
+        actualLast = last.timestamp.astimezone(my_timezone)
+
+        #delta = expectedLast - last.timestamp
+        if expectedLast.day != actualLast.day:
+            worker_tasks.scrapHistoricalQuotes.delay(
+                symbol, duration)
+            return HttpResponse(status=208)
+            # lastTime = last.timestamp.strftime("%y%m%d")
+            # expectedTime = expectedLast.strftime("%y%m%d")
 
     serializer = ticker_serializers.QuoteWarehouseSerializer(
         querySet, many=True)
