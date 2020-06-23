@@ -16,17 +16,17 @@ def getPeriodTimeDelta(duration):
     deltaD = 0  # refers to historical days to revind from
     if duration == "5D":
         period = "5M"
-        deltaD = 4
+        deltaD = 7
     elif duration == "1M":
         period = "1H"
-        deltaD = 30
+        deltaD = 26
     elif duration == "6M":
         period = "1D"
-        deltaD = 6*30
+        deltaD = 6*26
     elif duration == "1Y":
         period = "1D"
-        deltaD = 12*30
+        deltaD = 12*26
     elif duration == "5Y":
         period = "1W"
-        deltaD = 60 * 30
+        deltaD = 60 * 26
     return period, deltaD

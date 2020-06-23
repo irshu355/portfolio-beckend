@@ -26,6 +26,7 @@ from django.contrib.auth.decorators import login_required
 from datetime import date, datetime, timedelta, timezone
 from django.conf import settings
 import ticker.utils.utils as tickerUtils
+import ticker.utils.dateutils as dateUtils
 import pytz
 
 
@@ -195,7 +196,7 @@ def getHistorical(request):
     period, deltaD = tickerUtils.getPeriodTimeDelta(duration)
 
     if deltaD != 0:
-        now = now - timedelta(days=deltaD)
+        now = dateUtils.date_by_adding_business_days(now, -1 * deltaD)
 
     if duration == '1D':
         querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(

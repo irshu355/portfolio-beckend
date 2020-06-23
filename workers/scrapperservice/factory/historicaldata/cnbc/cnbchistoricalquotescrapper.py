@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from django.conf import settings
 import ticker.utils.utils as tickerUtils
+import ticker.utils.dateutils as dateUtils
 
 
 class CNBCHistoricalQuoteScrapperService:
@@ -51,7 +52,7 @@ class CNBCHistoricalQuoteScrapperService:
         period, deltaD = tickerUtils.getPeriodTimeDelta(duration)
 
         if deltaD != 0:
-            now = now - timedelta(days=deltaD)
+            now = dateUtils.date_by_adding_business_days(now, -1*deltaD)
 
         date_from = now.strftime('%Y%m%d') + "093000"
         # for ref 'https://ts-api.cnbc.com/harmony/app/bars/AAL/30M/20120718000000/20200626000000/adjusted/EST5EDT.json'
