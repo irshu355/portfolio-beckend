@@ -14,7 +14,7 @@ urlpatterns = [
     path(r'option_expiries_by_ticker', views.getOptionsExpiries),
     path(r'options_by_ticker', views.getOptionsByTicker),
     path(r'options_by_expiry', views.getOptionsByExpiry),
-    path(r'options_with_iv_by_ticker', views.getOptionsWithIvByTicker),
+    path(r'options_with_oi_by_ticker', views.getOptionsWithOpenInterestByTicker),
     path(r'options_with_vol_by_ticker', views.getOptionsWithVolByTicker),
     path(r'toggle_watchlist', views.toggleWatchlist),
     path(r'symbols', views.getSymbols),

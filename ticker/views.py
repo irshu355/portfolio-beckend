@@ -72,7 +72,7 @@ def getWatchListByUserId(request):
 
 
 @api_view(['GET'])
-def getSymbols(request):
+def getSymbols(request, *args, **kwargs):
     symbol = request.GET['symbol']
 
     user = request.user
@@ -133,10 +133,10 @@ def getOptionsExpiries(request):
 
 
 @api_view(['GET'])
-def getOptionsWithIvByTicker(request):
+def getOptionsWithOpenInterestByTicker(request):
     ticker = request.GET['ticker']
     querySet = Option.objects.filter(
-        ticker__symbol=ticker).order_by('-iv')[:10]
+        ticker__symbol=ticker).order_by('-open_interest')[:10]
 
     serializer = ticker_serializers.OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
