@@ -136,7 +136,7 @@ def getOptionsExpiries(request):
 def getOptionsWithOpenInterestByTicker(request):
     ticker = request.GET['ticker']
     querySet = Option.objects.filter(
-        ticker__symbol=ticker).order_by('-open_interest')[:10]
+        ticker__symbol=ticker).order_by('-open_interest')[:20]
 
     for rec in querySet:
         print(rec.open_interest)
@@ -149,7 +149,7 @@ def getOptionsWithOpenInterestByTicker(request):
 def getOptionsWithVolByTicker(request):
     ticker = request.GET['ticker']
     querySet = Option.objects.filter(
-        ticker__symbol=ticker).order_by('-volume')[:10]
+        ticker__symbol=ticker).order_by('-volume')[:20]
 
     serializer = ticker_serializers.OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
