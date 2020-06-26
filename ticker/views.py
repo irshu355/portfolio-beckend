@@ -175,10 +175,17 @@ def getHistorical(request):
     now = datetime.now()
 
     marketOpens = todayAt(9, 30, 00)
+    marketClose = todayAt(15, 59, 59)
+
+    # this only applies to periods not 1D
+    if (now > marketClose):
+        dateEnds = marketClose
+    else:
+        dateEnds = marketClose - timedelta(days=1)
 
     day = now.strftime("%A")
 
-    # remember, we ignore time, so timezone doesnt really matter
+    # remember, we only need the date, so timezone doesnt really matter
     if day == 'Saturday':
         now = marketOpens - timedelta(days=1)
     elif day == 'Sunday':
@@ -205,7 +212,6 @@ def getHistorical(request):
         querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(
             timestamp__startswith=now.date()) & Q(period=period)).order_by('timestamp')
     else:
-        dateEnds = todayAt(9, 30, 00)
         querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(
             timestamp__range=[now, dateEnds]) & Q(period=period)).order_by('timestamp')
 
