@@ -224,7 +224,7 @@ def getHistorical(request):
         actualLast = last.timestamp.astimezone(my_timezone)
 
         #delta = expectedLast - last.timestamp
-        if expectedLast.day != actualLast.day:
+        if actualLast.day < expectedLast.day:
             worker_tasks.scrapHistoricalQuotes.delay(
                 symbol, duration)
             return HttpResponse(status=208)
