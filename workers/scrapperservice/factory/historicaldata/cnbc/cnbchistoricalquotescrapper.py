@@ -32,6 +32,21 @@ class CNBCHistoricalQuoteScrapperService:
     # 6M - 1D
     # 1Y - 1W
 
+    def scrapFromTo(self, symbol, duration, date_from, date_to):
+        # dateformat:yyyymmddhhmmss
+        # for ref 'https://ts-api.cnbc.com/harmony/app/bars/AAL/30M/20120718000000/20200626000000/adjusted/EST5EDT.json'
+
+        period, deltaD = tickerUtils.getPeriodTimeDelta(duration)
+        url = 'https://ts-api.cnbc.com/harmony/app/bars/{0}/{1}/{2}/{3}/adjusted/EST5EDT.json'.format(
+            symbol, period, date_from, date_to)
+
+        requestResponse = requests.get(url, verify=False)
+        if (requestResponse.status_code != 200):
+            return [], requestResponse.status_code, requestResponse.reason
+        jsonRes = json.loads(requestResponse.text)
+
+        return self.parseTimeSeries(jsonRes, symbol, period), 200, ""
+
     def scrap(self, symbol, duration):
         now = datetime.now()
 

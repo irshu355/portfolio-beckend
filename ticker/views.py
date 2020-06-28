@@ -28,6 +28,7 @@ from django.conf import settings
 import ticker.utils.utils as tickerUtils
 import ticker.utils.dateutils as dateUtils
 import pytz
+from django.utils.timezone import localtime
 
 
 @api_view(['POST'])
@@ -161,6 +162,34 @@ def getTicker(request, symbol):
 
 
 @api_view(['GET'])
+def historical_by_date_range(request):
+    duration = request.GET['duration']
+    symbol = request.GET['symbol']
+    df = request.GET['from']
+    dt = request.GET['to']
+
+    date_from = datetime.strptime(df, '%Y%m%d%H%M%S')
+    date_to = datetime.strptime(dt, '%Y%m%d%H%M%S')
+    period, deltaD = tickerUtils.getPeriodTimeDelta(duration)
+
+    server_timezone = pytz.timezone("America/New_York")
+    aware_start_time = server_timezone.localize(date_from)  # aware object
+    aware_end_time = server_timezone.localize(date_to)
+
+    querySet = QuoteWareHouse.objects.filter(Q(symbol=symbol) & Q(
+        timestamp__range=[aware_start_time, aware_end_time]) & Q(period=period)).order_by('timestamp')
+
+    if querySet.count() == 0:
+        worker_tasks.scrapHistoricalQuotesFromTo(
+            symbol=symbol, duration=duration, date_from=df, date_to=date_to)
+        return HttpResponse(status=208)
+
+    serializer = ticker_serializers.QuoteWarehouseSerializer(
+        querySet, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
 def getHistorical(request):
     # 1D = 1M
     # 5d(1W) = 5M
@@ -224,10 +253,13 @@ def getHistorical(request):
     # check if last record is yesterday for periods 5D,1M,6M,1Y
     if duration == '5D' or duration == '1M' or duration == '6M' or duration == '1Y':
         last = querySet[len(querySet) - 1] if querySet else None
-        my_timezone = pytz.timezone("America/New_York")
+        server_timezone = pytz.timezone("America/New_York")
 
-        expectedLast = pytz.timezone("America/New_York").localize(backupNow)
-        actualLast = last.timestamp.astimezone(my_timezone)
+        # one way to localize/timezoneaware a datetime object
+        expectedLast = server_timezone.localize(backupNow)
+
+        # django built-in way to localize/timezoneaware a datetime object
+        actualLast = localtime(last.timestamp)
 
         #delta = expectedLast - last.timestamp
         if actualLast.day < expectedLast.day:

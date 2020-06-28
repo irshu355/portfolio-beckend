@@ -19,8 +19,8 @@ urlpatterns = [
     path(r'toggle_watchlist', views.toggleWatchlist),
     path(r'symbols', views.getSymbols),
     path(r'ticker/<str:symbol>', views.getTicker),
-    path(r'historical', views.getHistorical)
-
+    path(r'historical', views.getHistorical),
+    path(r'historical_by_date_range', views.historical_by_date_range)
 ]
 
 urlpatterns += router.urls
