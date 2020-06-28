@@ -181,7 +181,7 @@ def historical_by_date_range(request):
 
     if querySet.count() == 0:
         worker_tasks.scrapHistoricalQuotesFromTo(
-            symbol=symbol, duration=duration, date_from=df, date_to=date_to)
+            symbol=symbol, duration=duration, date_from=df, date_to=dt)
         return HttpResponse(status=208)
 
     serializer = ticker_serializers.QuoteWarehouseSerializer(
