@@ -134,7 +134,8 @@ def _scrapHistoricalQuotes(ticker, duration):
     dal.postQuoteHistorical(history)
     obj = {
         "symbol": ticker,
-        "duration": duration
+        "duration": duration,
+        "extras": ""
     }
     transmitHistoricalLoadedMessage(obj)
     return "added historical" + ticker + " with period " + duration
@@ -149,7 +150,8 @@ def _scrapHistoricalQuotesFromTo(ticker, duration, date_from, date_to):
     dal.postQuoteHistorical(history)
     obj = {
         "symbol": ticker,
-        "duration": duration
+        "duration": duration,
+        "extras": date_from + "#" + date_to + "#" + duration
     }
     transmitHistoricalLoadedMessage(obj)
     return "added historical"+ticker + " with period " + duration
