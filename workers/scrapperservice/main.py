@@ -53,6 +53,7 @@ def _scrap(ticker):
 def _scrapAll():
     scrapper = Scrapper()
     dal = DALManager()
+    dal.postOptions()
     list = dal.getTickers()
     tickerInstance, name = scrapper.getScrapper()
     for t in list:
@@ -131,7 +132,11 @@ def _scrapHistoricalQuotes(ticker, duration):
     dal = DALManager()
     Instance, name = scrapper.getScrapperHistoricalQuotes()
     history, status, reason = Instance().scrap(ticker, duration)
-    dal.postQuoteHistorical(history)
+    if(status == 200):
+        dal.postQuoteHistorical(history)
+    else:
+        dal.reportFaultySource(name, status, reason)
+
     obj = {
         "symbol": ticker,
         "duration": duration,

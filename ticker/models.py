@@ -10,12 +10,31 @@ from django.utils.timezone import now
 from django.contrib.auth.models import User
 from ticker.utils.utils import UserTier
 from decimal import Decimal
+import workers.models as WorkerModels
 
 
 class Health(models.Model):
+
+    OUTLET_CHOICES = (
+        # quotes
+        (WorkerModels.TickerScrapperSource.CNBC.value,
+         WorkerModels.TickerScrapperSource.CNBC.value),
+        (WorkerModels.TickerScrapperSource.NASDAQ.value,
+         WorkerModels.TickerScrapperSource.NASDAQ.value),
+        (WorkerModels.TickerScrapperSource.YF.value,
+         WorkerModels.TickerScrapperSource.YF.value),
+        # options
+        (WorkerModels.OptionsScrapperSource.YF.value,
+         WorkerModels.OptionsScrapperSource.YF.value),
+        # historical
+        (WorkerModels.HistoricalQuoteScrapperSource.CNBC.value,
+         WorkerModels.HistoricalQuoteScrapperSource.CNBC.value),
+    )
+
     name = models.CharField(
-        unique=True, max_length=30, blank=True, null=True)
-    status = models.IntegerField(blank=True, null=True)
+        unique=True, max_length=30, blank=True, null=True, choices=OUTLET_CHOICES)
+    status = models.IntegerField(
+        blank=True, null=True, choices=((500, '500'), (400, '400')))
     reason = models.CharField(
         unique=False, max_length=500, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
