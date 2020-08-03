@@ -25,16 +25,8 @@ class NasdaqScrapperService:
 
     def scrapTicker(self, ticker):
 
-        # headers = {
-        # "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        # "Accept-Encoding":"gzip, deflate",
-        # "Accept-Language":"en-GB,en;q=0.9,en-US;q=0.8,ml;q=0.7",
-        # "Connection":"keep-alive",
-        # "Host":"www.nasdaq.com",
-        # "Referer":"http://www.nasdaq.com",
-        # "Upgrade-Insecure-Requests":"1",
-        # "User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36"
-        #  }
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
+                   'Accept-Encoding': 'gzip, deflate, br', 'Accept-Language': 'en-US,en;q=0.9,hi;q=0.8'}
 
         #url = 'https://www.nasdaq.com/market-activity/stocks/{}'.format(ticker)
 
@@ -43,8 +35,9 @@ class NasdaqScrapperService:
         infoUrl = "https://api.nasdaq.com/api/quote/{}/info?assetclass=stocks".format(
             ticker)
 
-        summaryReponse = requests.get(summaryUrl, verify=False)
-        infoResponse = requests.get(infoUrl, verify=False)
+        summaryReponse = requests.get(
+            summaryUrl, headers=headers, verify=False)
+        infoResponse = requests.get(infoUrl, headers=headers, verify=False)
 
         if summaryReponse.status_code != 200:
             raise ValueError("Invalid Response Received From Webserver")
@@ -66,8 +59,14 @@ class NasdaqScrapperService:
         previous_close = infoJson["data"]["keyStats"]["PreviousClose"]["value"]
         volume = infoJson["data"]["keyStats"]["Volume"]["value"]
         pe_ratio = summaryJson["data"]["summaryData"]["PERatio"]["value"]
+
+        if pe_ratio == 'N/A':
+            pe_ratio = 0.0
+
         # xxxx
         eps = summaryJson["data"]["summaryData"]["EarningsPerShare"]["value"]
+        if eps == 'N/A':
+            eps = '0.0'
         market_cap = infoJson["data"]["keyStats"]["MarketCap"]["value"]
         sector = summaryJson["data"]["summaryData"]["Sector"]["value"]
         industry = summaryJson["data"]["summaryData"]["Industry"]["value"]

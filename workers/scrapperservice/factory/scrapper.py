@@ -60,8 +60,8 @@ class Scrapper:
             self.factory.register_historicalquotes_builder(
                 HistoricalQuoteScrapperSource.CNBC.value, cnbchistoricalquotescrapper.CNBCHistoricalQuoteScrapperServiceBuilder())
 
-    def getScrapper(self):
-        return self.factory.create(TickerScrapperSource.NASDAQ.value, **self.config)
+    def getScrapper(self, provider):
+        return self.factory.create(provider, **self.config)
 
     def getScrapperOption(self):
         return self.factory.createOption(OptionsScrapperSource.YF.value, **self.config)

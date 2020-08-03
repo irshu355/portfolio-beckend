@@ -1,5 +1,6 @@
 from workers.scrapperservice.factory.scrapper import Scrapper
 from workers.scrapperservice.dalmanager import DALManager
+from workers.models import TickerScrapperSource
 import pandas as pd
 import os
 from django.conf import settings
@@ -49,13 +50,26 @@ def _scrap(ticker):
     result = dal.postTicker(data)
     return result
 
+#
+# stock quotes
+#
+
+
+def _addTicker(ticker):
+    x = Scrapper()
+    dal = DALManager()
+    tickerInstance, name = x.getScrapper(TickerScrapperSource.NASDAQ.value)
+    data = tickerInstance().scrapTicker(ticker)
+    result = dal.postTicker(data)
+    return result
+
 
 def _scrapAll():
     scrapper = Scrapper()
     dal = DALManager()
-    dal.postOptions()
+
     list = dal.getTickers()
-    tickerInstance, name = scrapper.getScrapper()
+    tickerInstance, name = scrapper.getScrapper(None)
     for t in list:
         data = tickerInstance().scrapTicker(t)
         dal.postTicker(data)

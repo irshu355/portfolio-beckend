@@ -23,7 +23,18 @@ class ScrapperObjectFactory:
         self._builders_historicalquotes.append(ScrapperObj(key, builder))
 
     def create(self, key, **kwargs):
-        choice = random.choice(self._builders)
+        choice = None
+        if(key == None):
+            choice = random.choice(self._builders)
+        else:
+            for x in self._builders:
+                if x.name == key:
+                    choice = x
+
+        if choice == None:
+            print("couldnt find a scrapper with key:  " + key)
+            choice = random.choice(self._builders)
+
         return choice.obj, choice.name
 
     def createOption(self, key, **kwargs):

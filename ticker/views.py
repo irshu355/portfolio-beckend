@@ -46,7 +46,7 @@ def toggleWatchlist(request):
         ticker__symbol=symbol).filter(owner=profile).first()
     if ticker == None or watchItem == None:
         dalManager = DALManager()
-        data = main._scrap(symbol)
+        data = main._addTicker(symbol)
 
         # try:
         #     return Ticker.objects.get(symbol=symbol)
