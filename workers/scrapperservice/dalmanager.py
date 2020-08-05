@@ -62,7 +62,7 @@ class DALManager:
         else:
             serializer = TickerSerializer(ticker, data=data)
         if serializer.is_valid():
-            print("updating" + data["symbol"] + "via " + data["source"])
+            print("updating" + data["symbol"] + " via " + data["source"])
             serializer.save()
             return data
         return "bad request, ticker worker failed to insert/update"

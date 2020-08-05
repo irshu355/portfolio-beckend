@@ -45,7 +45,7 @@ def _scrapSymbols(nasdaqListed):
 def _scrap(ticker):
     x = Scrapper()
     dal = DALManager()
-    tickerInstance, name = x.getScrapper()
+    tickerInstance, name = x.getScrapper(None)
     data = tickerInstance().scrapTicker(ticker)
     result = dal.postTicker(data)
     return result
