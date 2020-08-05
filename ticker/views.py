@@ -32,7 +32,7 @@ from django.utils.timezone import localtime
 
 
 @api_view(['POST'])
-# @login_required
+@login_required
 def toggleWatchlist(request):
 
     user = request.user
