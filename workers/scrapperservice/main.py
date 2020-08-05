@@ -81,7 +81,7 @@ def _scrapWatchListTickers():
     dal = DALManager()
     list = dal.getWatchList()
     for watch in list:
-        tickerInstance, name = scrapper.getScrapper()
+        tickerInstance, name = scrapper.getScrapper(None)
         data = tickerInstance().scrapTicker(watch.ticker.symbol)
         # obj = {
         #     "price": data["price"],
