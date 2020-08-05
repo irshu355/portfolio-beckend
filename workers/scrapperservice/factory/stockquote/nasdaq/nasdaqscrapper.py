@@ -25,7 +25,7 @@ class NasdaqScrapperService:
 
     def scrapTicker(self, ticker):
 
-        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
+        headers = {'User-Agent': 'Mozilla/5.0 (X11; CrOS i686 2268.111.0) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11ua.firefox',
                    'Accept-Encoding': 'gzip, deflate, br', 'Accept-Language': 'en-US,en;q=0.9,hi;q=0.8'}
 
         #url = 'https://www.nasdaq.com/market-activity/stocks/{}'.format(ticker)
@@ -36,8 +36,8 @@ class NasdaqScrapperService:
             ticker)
         print("scrapping {0} via NAZ".format(ticker))
         summaryReponse = requests.get(
-            summaryUrl, verify=False)
-        infoResponse = requests.get(infoUrl,  verify=False)
+            summaryUrl, headers=headers, verify=False)
+        infoResponse = requests.get(infoUrl, headers=headers, verify=False)
 
         print("response recieved for {0} via NAZ".format(ticker))
 
