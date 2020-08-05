@@ -43,7 +43,7 @@ def scrap_watchlist_tickers(request):
     # scrapTicker.delay('AAPL')
     html = "<html><body>It is now %s.</body></html>" % now
     # return HttpResponse(html)
-
+    print("syncing watchlist tickers")
     workers.tasks.scrapWatchListTickers()
     return HttpResponse(html)
 
