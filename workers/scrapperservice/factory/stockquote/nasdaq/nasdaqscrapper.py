@@ -36,8 +36,8 @@ class NasdaqScrapperService:
             ticker)
         print("scrapping {0} via NAZ".format(ticker))
         summaryReponse = requests.get(
-            summaryUrl, headers=headers, verify=False)
-        infoResponse = requests.get(infoUrl, headers=headers, verify=False)
+            summaryUrl, verify=False)
+        infoResponse = requests.get(infoUrl,  verify=False)
 
         print("response recieved for {0} via NAZ".format(ticker))
 
