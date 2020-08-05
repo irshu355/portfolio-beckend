@@ -34,10 +34,12 @@ class NasdaqScrapperService:
             ticker)
         infoUrl = "https://api.nasdaq.com/api/quote/{}/info?assetclass=stocks".format(
             ticker)
-
+        print("scrapping {0} via NAZ".format(ticker))
         summaryReponse = requests.get(
             summaryUrl, headers=headers, verify=False)
         infoResponse = requests.get(infoUrl, headers=headers, verify=False)
+
+        print("response recieved for {0} via NAZ".format(ticker))
 
         if summaryReponse.status_code != 200:
             raise ValueError("Invalid Response Received From Webserver")
