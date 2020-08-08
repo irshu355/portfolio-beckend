@@ -58,7 +58,7 @@ def _scrap(ticker):
 def _addTicker(ticker):
     x = Scrapper()
     dal = DALManager()
-    tickerInstance, name = x.getScrapper(TickerScrapperSource.NASDAQ.value)
+    tickerInstance, name = x.getScrapper(TickerScrapperSource.IEX.value)
     data = tickerInstance().scrapTicker(ticker)
     result = dal.postTicker(data)
     return result

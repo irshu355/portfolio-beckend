@@ -20,7 +20,7 @@ class YFScrapperService:
         self.name = TickerScrapperSource.YF.value
 
     def test_connection(self):
-        print(f'Accessing Pandora with {self._key} and {self._secret}')
+        print(f'Accessing YFInance with {self._key} and {self._secret}')
 
     def scrapTicker(self, ticker):
 

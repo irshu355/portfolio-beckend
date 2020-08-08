@@ -1,5 +1,6 @@
 from workers.scrapperservice.factory.scrapperobjectfactory import ScrapperObjectFactory
 from workers.scrapperservice.factory.stockquote.nasdaq import nasdaqscrapper
+from workers.scrapperservice.factory.stockquote.iex import iexscrapper
 from workers.scrapperservice.factory.stockquote.cnbc import cnbcscrapper
 from workers.scrapperservice.factory.stockquote.yahoofinance import yfinancescrapper
 from workers.scrapperservice.factory.options.yahoofinance import yfoptionscrapper
@@ -32,9 +33,13 @@ class Scrapper:
 
         # nasdaq quotes
 
-        if not TickerScrapperSource.NASDAQ.value in healths:
+        # if not TickerScrapperSource.NASDAQ.value in healths:
+        #     self.factory.register_builder(
+        #         TickerScrapperSource.NASDAQ.value, nasdaqscrapper.NasdaqScrapperServiceBuilder())
+
+        if not TickerScrapperSource.IEX.value in healths:
             self.factory.register_builder(
-                TickerScrapperSource.NASDAQ.value, nasdaqscrapper.NasdaqScrapperServiceBuilder())
+                TickerScrapperSource.IEX.value, iexscrapper.IEXScrapperServiceBuilder())
 
         # yahoo finance  quotes
         if not TickerScrapperSource.YF.value in healths:
@@ -55,6 +60,8 @@ class Scrapper:
         # if not HistoricalQuoteScrapperSource.AlphaVintage.value in healths:
         #     self.factory.register_historicalquotes_builder(
         #         HistoricalQuoteScrapperSource.AlphaVintage.value, alphavintagehistoricalquotescrapper.AlphaVintageHistoricalQuoteScrapperServiceBuilder())
+
+         # historical
 
         if not HistoricalQuoteScrapperSource.CNBC.value in healths:
             self.factory.register_historicalquotes_builder(

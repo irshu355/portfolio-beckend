@@ -6,6 +6,7 @@ class TickerScrapperSource(Enum):
     NASDAQ = "NASDAQ_QUOTES"
     CNBC = "CNBC_QUOTES"
     YF = "YF_QUOTES"
+    IEX = "IEX"
 
 
 class OptionsScrapperSource(Enum):
