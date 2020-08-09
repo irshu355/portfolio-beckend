@@ -21,6 +21,8 @@ class Health(models.Model):
          WorkerModels.TickerScrapperSource.CNBC.value),
         (WorkerModels.TickerScrapperSource.NASDAQ.value,
          WorkerModels.TickerScrapperSource.NASDAQ.value),
+        (WorkerModels.TickerScrapperSource.IEX.value,
+         WorkerModels.TickerScrapperSource.IEX.value),
         (WorkerModels.TickerScrapperSource.YF.value,
          WorkerModels.TickerScrapperSource.YF.value),
         # options
