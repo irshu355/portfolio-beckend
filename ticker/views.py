@@ -29,6 +29,7 @@ import ticker.utils.utils as tickerUtils
 import ticker.utils.dateutils as dateUtils
 import pytz
 from django.utils.timezone import localtime
+from django.db.models import Count
 
 
 @api_view(['POST'])
@@ -121,6 +122,14 @@ def getOptionsByExpiry(request):
 
     serializer = ticker_serializers.OptionsSerializer(querySet, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def getOptionStatistics(request):
+    symbol = request.GET['symbol']
+    querySet = Option.objects.filter(ticker__symbol=symbol).values(
+        "contract_type").annotate(Count("volume")).order_by()
+    return HttpResponse(json.dumps(list(querySet)))
 
 
 @api_view(['GET'])
