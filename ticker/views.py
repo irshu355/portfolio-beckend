@@ -30,6 +30,7 @@ import ticker.utils.dateutils as dateUtils
 import pytz
 from django.utils.timezone import localtime
 from django.db.models import Count, Sum
+from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 
@@ -59,8 +60,21 @@ def toggleWatchlist(request):
         ticker = Ticker.objects.filter(symbol=symbol).first()
         obj = WatchList.objects.create(ticker=ticker, owner=profile)
         channel_layer = get_channel_layer()
+        obj = {
+            "symbol": symbol,
+
+        }
+        async_to_sync(channel_layer.group_send)(
+            request.user.username,
+            {
+                'type': 'watchlist_added',
+                'message': obj
+            }
+        )
+
     else:
         watchItem.delete()
+        # TODO remove symbol from signal socket group
     return JsonResponse({'symbol': symbol, 'subscribed': 1 if watchItem == None else 0})
 
 

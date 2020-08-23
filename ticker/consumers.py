@@ -11,6 +11,12 @@ class QuoteConsumer(WebsocketConsumer):
         self.token = self.scope['url_route']['kwargs']['username']
         user = Token.objects.get(key=self.token).user
         watchList = WatchList.objects.filter(owner__user=user)
+
+        async_to_sync(self.channel_layer.group_add)(
+            user.username,
+            self.channel_name
+        )
+
         for rec in watchList:
             async_to_sync(self.channel_layer.group_add)(
                 rec.ticker.symbol,
@@ -85,6 +91,15 @@ class QuoteConsumer(WebsocketConsumer):
             'type': 'historical-loaded',
             'historical_loaded': message
         }))
+
+    def watchlist_added(self, event):
+        message = event['message']
+        print(message)
+        print(message["symbol"])
+        async_to_sync(self.channel_layer.group_add)(
+            message["symbol"],
+            self.channel_name
+        )
 
     def markUserOnline(self, user, status):
         try:
