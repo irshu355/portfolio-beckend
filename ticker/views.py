@@ -29,7 +29,8 @@ import ticker.utils.utils as tickerUtils
 import ticker.utils.dateutils as dateUtils
 import pytz
 from django.utils.timezone import localtime
-from django.db.models import Count,Sum
+from django.db.models import Count, Sum
+from asgiref.sync import async_to_sync
 
 
 @api_view(['POST'])
@@ -57,6 +58,7 @@ def toggleWatchlist(request):
     if watchItem == None:
         ticker = Ticker.objects.filter(symbol=symbol).first()
         obj = WatchList.objects.create(ticker=ticker, owner=profile)
+        channel_layer = get_channel_layer()
     else:
         watchItem.delete()
     return JsonResponse({'symbol': symbol, 'subscribed': 1 if watchItem == None else 0})
